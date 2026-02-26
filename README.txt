@@ -2,8 +2,8 @@
 CSCI40 - Section F - Group 12 - Midterm Project: Common Grounds
 Contributors/Authors: Michel Kristof Cabataña, Joshua Dame Calanno, Luis Andrei Pagkaliwangan, Jurvick Dietrich Tan
 Apps:
-- Merchandise Store
+- Merchandise Store (Michel Kristof Cabatana)
 - Local Events
 - Book Club
 - DIY Projects
-- Commission Requests
+- Commission Requests (Jurvick Dietrich Tan)
