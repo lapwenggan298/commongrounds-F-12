@@ -5,5 +5,5 @@ Apps:
 - Merchandise Store (Michel Kristof Cabatana)
 - Local Events
 - Book Club
-- DIY Projects
+- DIY Projects (Dame Calanno)
 - Commission Requests (Jurvick Dietrich Tan)
