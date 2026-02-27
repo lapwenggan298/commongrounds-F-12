@@ -2,6 +2,12 @@
 
 <p>{{ commission.description }}</p>
 
+<p><strong>Type:</strong>
+    {% if commission.type %}
+        {{ commission.type.name }}
+    {% endif %}
+</p>
+
 <p><strong>People Required:</strong> {{ commission.people_required }}</p>
 <p><strong>Created On:</strong> {{ commission.created_on }}</p>
 <p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
