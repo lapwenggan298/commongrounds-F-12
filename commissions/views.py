@@ -1,23 +1,14 @@
-from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic import ListView, DetailView
+from .models import Commission
 
 
-from django.http import HttpResponse
-
-from .models import Commissions
-from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
-
-def index(request):
-    return HttpResponse('Sorry bro.')
-
-def commission_list(request):
-    commissions = Commissions.objects.all()
-    context = {"commissions": commissions}
-    return render(request, "ledger/commission_list.html", context)
+class CommissionListView(ListView):
+    model = Commission
+    template_name = "commissions/commission_list.html"
+    context_object_name = "commissions"
 
 
-def commission_detail(request, pk):
-    commissions = Commission.objects.get(pk=pk)
-    context = {"recipe": recipe}
-    return render(request, "ledger/commission_detail.html", context)
+class CommissionDetailView(DetailView):
+    model = Commission
+    template_name = "commissions/commission_detail.html"
+    context_object_name = "commission"
