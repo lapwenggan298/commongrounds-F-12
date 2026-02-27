@@ -5,6 +5,7 @@ from .models import Commission, CommissionType
 @admin.register(CommissionType)
 class CommissionTypeAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    ordering = ("name",)
     search_fields = ("name",)
 
 
