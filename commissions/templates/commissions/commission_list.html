@@ -1,0 +1,14 @@
+<h1>Commission Requests</h1>
+
+<ul>
+    {% for commission in commissions %}
+        <li>
+            <a href="{% url 'commissions:commission_detail' commission.pk %}">
+                {{ commission.title }}
+            </a>
+            (People required: {{ commission.people_required }})
+        </li>
+    {% empty %}
+        <li>No commissions available.</li>
+    {% endfor %}
+</ul>
