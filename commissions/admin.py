@@ -12,9 +12,10 @@ class CommissionTypeAdmin(admin.ModelAdmin):
 class CommissionAdmin(admin.ModelAdmin):
     list_display = (
         "title",
+        "type",
         "people_required",
         "created_on",
         "updated_on",
     )
     search_fields = ("title",)
-    list_filter = ("created_on",)
+    list_filter = ("created_on", "type",)
