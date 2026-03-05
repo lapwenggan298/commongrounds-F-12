@@ -4,5 +4,4 @@ urlpatterns = [
 
 ]
 
-
 app_name = "commissions"
