@@ -5,12 +5,12 @@ urlpatterns = [
     path(
         "projects/", 
         ProjectListView.as_view(), 
-        name="project_list", 
+        name="project_list"
     ), 
     path(
         "project/<int:pk>", 
         ProjectDetailView.as_view(), 
-        name="project_detail", 
+        name="project_detail"
     ), 
 ]
 

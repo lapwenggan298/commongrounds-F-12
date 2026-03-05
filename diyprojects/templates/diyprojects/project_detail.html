@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
     <h1>{{ project.title }}</h1>
     <p><i>Project type: {{ project.category.name }}</i></p>
 
-    <br><br>
-
     <p>{{ project.description }}</p>
+
+    <br>
 
     <h2>Materials</h2>
     <p>{{ project.materials }}</p>
