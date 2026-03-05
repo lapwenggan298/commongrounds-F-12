@@ -26,4 +26,8 @@ class ProjectAdmin(admin.ModelAdmin):
         "updated_on", 
     )
     search_fields = ("title", )
-    list_filter = ("created_on", "category", )
+    list_filter = ("created_on", "category", )  
+
+
+admin.site.register(ProjectCategory, ProjectCategoryAdmin)
+admin.site.register(Project, ProjectAdmin)
