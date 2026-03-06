@@ -4,34 +4,36 @@ from django.urls import reverse
 
 class Genre(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ['name',]
-
+        ordering = ['name']
 
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField()
     publication_year = models.IntegerField()
-    created_on = models.DateTimeField()
-    updated_on = models.DateTimeField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
-    bookcategory = models.ForeignKey(
+    book_category = models.ForeignKey(
         Genre,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='genres',
     )
 
     def __str__(self):
-        return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.bookcategory.name}."
+        return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.book_category.name}."
     
     def get_absolute_url(self):
-        return reverse("bookclub:book_detail", args=[str(self.id)])
+        return reverse("bookclub:book_detail", args=[str(self.pk)])
 
     class Meta:
-        ordering = ['-publication_year',]
+        ordering = ['-publication_year']
+

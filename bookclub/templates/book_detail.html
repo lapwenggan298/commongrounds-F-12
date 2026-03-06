@@ -2,9 +2,17 @@
 
 	{% block content %}
 
-	<a href = "/books">Back to List of Books</a>
+	<a href = "{% url 'bookclub:book_list' %}">Back to List of Books</a>
 
-	<h2> Book Detail</h2>
-	<h3> {{ book.name }}</h3>
+	<h1> Book Detail</h1>
+	
+	<h2> {{ book.title }}</h2>
+	<p>Author: {{ book.author }}</p>
+	<p>Genre: {{ book.book_category.name }} </p>
+	<p>Published on the year of: {{ book.publication_year }}</p>
+	
+	<br>
+	<p>Book added to our list on: {{ book.created_on }}</p>
+	<p>Book on our list updated on: {{book.updated_on}} </p>
 
 {% endblock %}
