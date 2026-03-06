@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>DIY Projects</h1>
+
+    <ul>
+        {% for project in projects %}
+            <li>
+                <a href="../project/{{ project.pk }}">{{ project.title }}</a>
+            </li>
+        {% empty %}
+            <p>No projects just yet~</p>
+        {% endfor %}
+    </ul>
+{% endblock %}
