@@ -19,17 +19,25 @@ class Book(models.Model):
     publication_year = models.IntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    synopsis = models.TextField(blank=True)
+    available_to_borrow = models.BooleanField()
 
-    book_category = models.ForeignKey(
+    #contributor = models.ForeignKey(
+    #   Profile class/model,
+    #   on_delete=models.SET_NULL,
+    #   related_name='books_contributed_to/uploaded',
+    # )
+
+    genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='genres',
+        related_name='books',
     )
 
     def __str__(self):
-        return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.book_category.name}."
+        return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.genre.name}."
     
     def get_absolute_url(self):
         return reverse("bookclub:book_detail", args=[str(self.pk)])
@@ -37,3 +45,54 @@ class Book(models.Model):
     class Meta:
         ordering = ['-publication_year']
 
+
+class BookReview(models.Model):
+    title = models.CharField()
+    anon_reviewer = models.TextField(blank=True)
+    comment = models.TextField(blank=True)
+
+    #user_review = models.ForeignKey(
+    #   Profile class/model,
+    #   on_delete=models.CASCADE,
+    #   related_name='book_reviews',
+    # )
+
+    book = models.ForeignKey(
+        Book,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+
+
+class Bookmark(models.Model):
+    date_bookmarked = models.DateField()
+
+    #profile = models.ForeignKey(
+    #   Profile class/model,
+    #   on_delete=models.CASCADE,
+    #   related_name='books_bookmarked',
+    #)
+
+    book = models.ForeignKey(
+        Book,
+        on_delete=models.CASCADE,
+        related_name='bookmarks',
+    )
+
+
+class Borrow(models.Model):
+    date_borrowed = models.DateField()
+    date_to_return = models.DateField()
+    name = models.CharField()
+
+    #borrower = models.ForeignKey(
+    #   Profile class/model,
+    #   on_delete=models.CASCADE,
+    #   related_name='borrowed_books',
+    # )
+
+    book = models.ForeignKey(
+        Book,
+        on_delete=models.CASCADE,
+        related_name='borrowed',
+    )
