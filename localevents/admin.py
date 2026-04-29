@@ -11,14 +11,14 @@ class EventTypeAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        'category'
-        'description'
-        'location'
+        'category',
+        'description',
+        'location',
     )
     search_fields = (
         'title',
         'location',
-        'description'
+        'description',
     )
 
 
