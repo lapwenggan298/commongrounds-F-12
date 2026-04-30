@@ -12,21 +12,21 @@ class CommissionListView(ListView):
 
     def get_queryset(self):
         return Commission.objects.annotate(
-        status_order=Case(
-            When(status="OPEN", then=0),
-            When(status="FULL", then=1),
-            When(status="COMPLETED", then=2),
-            When(status="DISCONTINUED", then=3),
-            output_field=IntegerField(),
-        )
-    ).order_by("status_order", "-created_on")
+            status_order=Case(
+                When(status="OPEN", then=0),
+                When(status="FULL", then=1),
+                When(status="COMPLETED", then=2),
+                When(status="DISCONTINUED", then=3),
+                output_field=IntegerField(),
+            )
+        ).order_by("status_order", "-created_on")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         user = self.request.user
 
-        if user.is_authenticated:
+        if user.is_authenticated and hasattr(user, "profile"):
             profile = user.profile
 
             my_commissions = Commission.objects.filter(maker=profile)
@@ -35,13 +35,12 @@ class CommissionListView(ListView):
                 jobs__applications__applicant=profile
             ).distinct()
 
-            all_commissions = context["commissions"].exclude(
-                id__in=my_commissions.union(applied_commissions)
-            )
+            exclude_ids = list(my_commissions.values_list("id", flat=True)) + \
+                          list(applied_commissions.values_list("id", flat=True))
 
             context["my_commissions"] = my_commissions
             context["applied_commissions"] = applied_commissions
-            context["commissions"] = all_commissions
+            context["commissions"] = context["commissions"].exclude(id__in=exclude_ids)
 
         return context
 
@@ -60,18 +59,6 @@ class CommissionCreateView(LoginRequiredMixin, CreateView):
     model = Commission
     fields = ["title", "description", "type", "people_required", "status"]
     template_name = "commissions/commission_form.html"
-
-    def form_valid(self, form):
-        commission = CommissionService.create_commission(
-            author=self.request.user.profile,
-            data=form.cleaned_data,
-            jobs_data=[{
-                "role": request.POST.get("role"),
-                "manpower_required": request.POST.get("manpower_required"),
-            }]
-        )
-
-        return redirect("commissions:commission_detail", pk=commission.pk)
     
     def dispatch(self, request, *args, **kwargs):
         if not request.user.profile.role == "Commission Maker":
@@ -85,8 +72,6 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-
-        CommissionService.sync_commission_status(self.object)
 
         return response
 
