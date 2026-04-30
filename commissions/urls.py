@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CommissionListView, CommissionDetailView, CommissionUpdateView, ApplyToJobView, CommissionCreateView
+from .views import CommissionListView, CommissionDetailView, CommissionUpdateView, CommissionCreateView
 
 app_name = "commissions"
 
