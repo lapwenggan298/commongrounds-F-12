@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>{{ project.title }}</h1>
+    <p><i>Project type: {{ project.category.name }}</i></p>
+
+    <p>{{ project.description }}</p>
+
+    <br>
+
+    <h2>Materials</h2>
+    <p>{{ project.materials }}</p>
+
+    <h2>Steps</h2>
+    <p>{{ project.steps }}</p>
+
+    <br><br>
+
+    <p>Project created on: {{ project.created_on }}</p>
+    <p>Project updated on: {{ project.updated_on }}</p>
+{% endblock %}

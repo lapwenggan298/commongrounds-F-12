@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Products</h1>
+
+    <ul>
+        {% for product in merchstore %}
+            <li>
+                <a href="{% url 'merchstore:product_detail' product.pk %}">
+                    {{ product.name }}
+                </a>
+            </li>
+        {% empty %}
+            <li>None available.</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+   

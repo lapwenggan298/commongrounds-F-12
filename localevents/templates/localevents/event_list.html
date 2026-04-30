@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Local Events</h1>
+<ul>
+    {% for event in events %}
+        <li>
+            <strong>{{ event.title }}</strong> - {{ event.location }} <br>
+            <a href="{% url 'localevents:event-detail' event.pk %}">View Details</a>
+        </li>
+    {% empty %}
+        <li>No events scheduled yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
