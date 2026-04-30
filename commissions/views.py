@@ -81,7 +81,10 @@ class CommissionCreateView(LoginRequiredMixin, CreateView):
         commission = CommissionService.create_commission(
             author=self.request.user.profile,
             data=form.cleaned_data,
-            jobs_data=[]
+            jobs_data=[{
+                "role": request.POST.get("role"),
+                "manpower_required": request.POST.get("manpower_required"),
+            }]
         )
 
         return redirect("commissions:commission_detail", pk=commission.pk)
