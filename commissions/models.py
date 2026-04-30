@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Case, When, IntegerField
 
 
 class CommissionType(models.Model):
@@ -43,8 +44,16 @@ class Commission(models.Model):
         default="OPEN",
     )
 
-    class Meta:
-        ordering = ["created_on"]
+    def get_queryset(self):
+        return Commission.objects.annotate(
+        status_order=Case(
+            When(status="OPEN", then=0),
+            When(status="FULL", then=1),
+            When(status="COMPLETED", then=2),
+            When(status="DISCONTINUED", then=3),
+            output_field=IntegerField(),
+        )
+        ).order_by("status_order", "-created_on")
 
     def __str__(self) -> str:
         return self.title
@@ -103,12 +112,14 @@ class JobApplication(models.Model):
 
     applied_on = models.DateTimeField(auto_now_add=True)
 
-    ordering = [
-    models.Case(
-        models.When(status="OPEN", then=0),
-        models.When(status="FULL", then=1),
-        output_field=models.IntegerField(),
-    ),
-    "-manpower_required",
-    "role",
-]
+    class Meta:
+        ordering = [
+        Case(
+            When(status="PENDING", then=0),
+            When(status="ACCEPTED", then=1),
+            When(status="REJECTED", then=2),
+            output_field=IntegerField(),
+        ),
+        "-applied_on",
+        ]
+        

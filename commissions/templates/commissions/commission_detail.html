@@ -17,6 +17,12 @@
     <p><strong>Created On:</strong> {{ commission.created_on }}</p>
     <p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
 
+    {% if user.is_authenticated and commission.maker == user.profile %}
+    <a href="{% url 'commissions:commission_update' commission.pk %}">
+        Edit Commission
+    </a>
+{% endif %}
+
    <h2>Jobs</h2>
 
     {% for job in commission.jobs.all %}

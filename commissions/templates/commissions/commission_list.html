@@ -1,7 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Commission Requests</h1>
+    
+<h1>My Commissions</h1>
+{% for c in my_commissions %}
+    <p><a href="{% url 'commissions:commission_detail' c.pk %}">{{ c.title }}</a></p>
+{% empty %}
+    <p>None</p>
+{% endfor %}
+
+
+<h1>Applied Commissions</h1>
+{% for c in applied_commissions %}
+    <p><a href="{% url 'commissions:commission_detail' c.pk %}">{{ c.title }}</a></p>
+{% empty %}
+    <p>None</p>
+{% endfor %}
+
+<h1>All Commission Requests</h1>
 
     <ul>
         {% for commission in commissions %}
@@ -9,12 +25,20 @@
                 <a href="{% url 'commissions:commission_detail' commission.pk %}">
                     {{ commission.title }}
                 </a>
+                <p><strong>Total Manpower:</strong> {{ summary.total_manpower }}</p>
+                <p><strong>Open Manpower:</strong> {{ summary.open_manpower }}</p>
                 (People required: {{ commission.people_required }})
             </li>
         {% empty %}
             <li>No commissions available.</li>
         {% endfor %}
     </ul>
+
+    {% if user.is_authenticated %}
+    <a href="{% url 'commissions:commission_create' %}">
+        Create Commission
+    </a>
+{% endif %}
 
 {% endblock %}
    

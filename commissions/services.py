@@ -31,10 +31,18 @@ class CommissionService:
         ).exists():
             raise ValueError("Already applied")
 
-        return JobApplication.objects.create(
+        application = JobApplication.objects.create(
             job=job,
             applicant=applicant
         )
+
+        accepted_count = job.applications.filter(status="ACCEPTED").count()
+
+        if accepted_count >= job.manpower_required:
+            job.status = "FULL"
+            job.save()
+
+        return application
 
     @staticmethod
     def sync_commission_status(commission):

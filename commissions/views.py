@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView, View, UpdateView
 from .models import Commission, Job
 from django.shortcuts import get_object_or_404, redirect
 from .services import CommissionService
@@ -88,10 +88,15 @@ class CommissionCreateView(LoginRequiredMixin, CreateView):
         )
 
         return redirect("commissions:commission_detail", pk=commission.pk)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.profile.role == "Commission Maker":
+            return redirect("commissions:commission_list")
+        return super().dispatch(request, *args, **kwargs)
+    
 
-from django.views.generic import UpdateView
 
-
+    
 class CommissionUpdateView(LoginRequiredMixin, UpdateView):
     model = Commission
     fields = ["title", "description", "type", "people_required", "status"]
