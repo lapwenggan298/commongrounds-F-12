@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Case, When, IntegerField
+from .services import CommissionService
 
 
 class CommissionType(models.Model):
@@ -79,6 +80,12 @@ class Job(models.Model):
         default="OPEN",
     )
 
+    def update_status_if_full(self):
+        accepted_count = self.applications.filter(status="ACCEPTED").count()
+
+    if accepted_count >= self.manpower_required:
+        self.status = "FULL"
+        self.save(update_fields=["status"])
     class Meta:
         ordering = ["-status", "-manpower_required", "role"]
 
@@ -111,6 +118,18 @@ class JobApplication(models.Model):
     )
 
     applied_on = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
+    super().save(*args, **kwargs)
+
+    if self.status == "ACCEPTED":
+        job = self.job
+
+        job.update_status_if_full()
+
+        CommissionService.sync_commission_status(job.commission)
 
     class Meta:
         ordering = [

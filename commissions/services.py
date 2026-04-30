@@ -50,7 +50,7 @@ class CommissionService:
 
         if all(job.status == "FULL" for job in jobs):
             commission.status = "FULL"
-            commission.save()
+            commission.save(update_fields=["status"])
 
     @staticmethod
     def get_commission_summary(commission):
