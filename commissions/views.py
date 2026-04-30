@@ -1,7 +1,6 @@
-from django.views.generic import ListView, DetailView, View, UpdateView
+from django.views.generic import ListView, DetailView, View, UpdateView, CreateView
 from .models import Commission, Job
 from django.shortcuts import get_object_or_404, redirect
-from .services import CommissionService
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
@@ -55,30 +54,7 @@ class CommissionDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         commission = self.object
-
-        context["summary"] = CommissionService.get_commission_summary(
-            commission
-        )
-
         return context
-
-class ApplyToJobView(LoginRequiredMixin, View):
-
-    def post(self, request, pk):
-        job = get_object_or_404(Job, pk=pk)
-
-        CommissionService.apply_to_job(
-            applicant=request.user.profile,
-            job=job
-        )
-
-        return redirect(
-            "commissions:commission_detail",
-            pk=job.commission.pk
-        )
-    
-from django.views.generic import CreateView
-
 
 class CommissionCreateView(LoginRequiredMixin, CreateView):
     model = Commission
@@ -101,9 +77,6 @@ class CommissionCreateView(LoginRequiredMixin, CreateView):
         if not request.user.profile.role == "Commission Maker":
             return redirect("commissions:commission_list")
         return super().dispatch(request, *args, **kwargs)
-    
-
-
     
 class CommissionUpdateView(LoginRequiredMixin, UpdateView):
     model = Commission

@@ -24,9 +24,4 @@ urlpatterns = [
         CommissionUpdateView.as_view(),
         name="commission_update",
     ),
-    path(
-        "job/<int:pk>/apply/",
-        ApplyToJobView.as_view(),
-        name="apply_to_job",
-    ),
 ]

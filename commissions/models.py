@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Case, When, IntegerField
-from .services import CommissionService
 from django.contrib.auth.models import User
 
 
@@ -118,9 +117,7 @@ class JobApplication(models.Model):
         if self.status == "ACCEPTED":
             job = self.job
 
-        job.update_status_if_full()
-
-        CommissionService.sync_commission_status(job.commission)
+            job.update_status_if_full()
 
     class Meta:
         ordering = [
@@ -133,14 +130,3 @@ class JobApplication(models.Model):
         "-applied_on",
         ]
         
-class Profile(models.Model):
-    ROLE_CHOICES = [
-        ("MEMBER", "Member"),
-        ("COMMISSION_MAKER", "Commission Maker"),
-    ]
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="MEMBER")
-
-    def __str__(self):
-        return self.user.username
