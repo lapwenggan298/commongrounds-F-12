@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Case, When, IntegerField
 from .services import CommissionService
+from django.contrib.auth.models import User
 
 
 class CommissionType(models.Model):
@@ -45,17 +46,6 @@ class Commission(models.Model):
         default="OPEN",
     )
 
-    def get_queryset(self):
-        return Commission.objects.annotate(
-        status_order=Case(
-            When(status="OPEN", then=0),
-            When(status="FULL", then=1),
-            When(status="COMPLETED", then=2),
-            When(status="DISCONTINUED", then=3),
-            output_field=IntegerField(),
-        )
-        ).order_by("status_order", "-created_on")
-
     def __str__(self) -> str:
         return self.title
     
@@ -83,9 +73,10 @@ class Job(models.Model):
     def update_status_if_full(self):
         accepted_count = self.applications.filter(status="ACCEPTED").count()
 
-    if accepted_count >= self.manpower_required:
-        self.status = "FULL"
-        self.save(update_fields=["status"])
+        if accepted_count >= self.manpower_required:
+            self.status = "FULL"
+            self.save(update_fields=["status"])
+
     class Meta:
         ordering = ["-status", "-manpower_required", "role"]
 
@@ -122,10 +113,10 @@ class JobApplication(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
 
-    super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-    if self.status == "ACCEPTED":
-        job = self.job
+        if self.status == "ACCEPTED":
+            job = self.job
 
         job.update_status_if_full()
 
@@ -142,3 +133,14 @@ class JobApplication(models.Model):
         "-applied_on",
         ]
         
+class Profile(models.Model):
+    ROLE_CHOICES = [
+        ("MEMBER", "Member"),
+        ("COMMISSION_MAKER", "Commission Maker"),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="MEMBER")
+
+    def __str__(self):
+        return self.user.username

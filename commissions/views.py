@@ -12,7 +12,15 @@ class CommissionListView(ListView):
     context_object_name = "commissions"
 
     def get_queryset(self):
-        return Commission.objects.all().order_by("created_on")
+        return Commission.objects.annotate(
+        status_order=Case(
+            When(status="OPEN", then=0),
+            When(status="FULL", then=1),
+            When(status="COMPLETED", then=2),
+            When(status="DISCONTINUED", then=3),
+            output_field=IntegerField(),
+        )
+    ).order_by("status_order", "-created_on")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,3 +123,7 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
             kwargs={"pk": self.object.pk}
         )
     
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.profile.role == "Commission Maker":
+            return redirect("commissions:commission_list")
+        return super().dispatch(request, *args, **kwargs)
