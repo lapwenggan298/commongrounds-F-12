@@ -1,9 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ event.title }}</h1>
-<p><strong>Location:</strong> {{ event.location }}</p>
-<p><strong>Description:</strong> {{ event.description }}</p>
+<h2>{{ event.title }}</h2>
+
+{% if event.event_image %}
+    <img src="{{ event.event_image.url }}" alt="{{ event.title }}" style="max-width: 400px;">
+{% endif %}
+
+<p><strong>Category:</strong> {{ event.category.name }}</p> 
+<p><strong>Location:</strong> {{ event.location }}</p> 
+<p><strong>Description:</strong> {{ event.description }}</p> 
+<p><strong>Time:</strong> {{ event.start_time }} - {{ event.end_time }}</p> 
+<p><strong>Status:</strong> {{ event.status }}</p> 
+
+<p><strong>Capacity:</strong> {{ event.eventsignup_set.count }} / {{ event.event_capacity }}</p>
+
+<hr>
+
+{% if request.user.is_authenticated %}
+    {% if request.user.profile not in event.organizer.all %}
+        {% if event.eventsignup_set.count >= event.event_capacity %}
+            <button disabled>Full</button> 
+        {% else %}
+            <form action="{% url 'localevents:event-signup' event.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Sign Up</button>
+            </form>
+        {% endif %}
+    {% endif %}
+{% else %}
+    {% if event.eventsignup_set.count < event.event_capacity %}
+        <a href="{% url 'localevents:event-signup' event.pk %}">Sign Up as Guest</a>
+    {% else %}
+        <button disabled>Full</button>
+    {% endif %}
+{% endif %}
+
+{% if request.user.is_authenticated and request.user.profile in event.organizer.all %}
+    <p><a href="{% url 'localevents:event-update' event.pk %}">Edit this Event</a></p>
+{% endif %}
+
 <hr>
 <a href="{% url 'localevents:event-list' %}">Back to all events</a>
 {% endblock %}
