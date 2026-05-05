@@ -14,5 +14,13 @@ class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInLine]
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    model = Profile
+    list_display = ('user', 'display_name', 'role')
+    list_filter = ('role')
+    search_fields = ('user__username', 'display_name')
+
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(Profile, ProfileAdmin)
