@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Commongrounds Project</h1>
+
+  <ul>
+    <li><a href="{% url 'user_dashboard' %}">My Profile Dashboard</a></li>
+    
+    <li><a href="{% url 'profile_update' %}">Update Profile Settings</a></li>
+  </ul>
+  
+  <p>Apps:</p>
+  <ul>
+    <li><a href="{% url 'product_list' %}">Merchstore</a></li>
+    <li><a href="{% url 'event-list' %}">Local Events</a></li>
+    <li><a href="{% url 'book_list' %}">Bookclub</a></li>
+    <li><a href="{% url 'project_list' %}">Diy Projects</a></li>
+    <li><a href="{% url 'commission_list' %}">Commissions</a></li>
+  </ul>
+{% endblock %}

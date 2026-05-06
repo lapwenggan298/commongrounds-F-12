@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <a href = "{% url 'home' %}">Back to Home Page</a>
+
     <h2>{{ request.user.profile.display_name}}'s Dashboard</h2>
   
     <h3>Products Sold</h3>

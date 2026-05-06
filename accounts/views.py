@@ -39,3 +39,7 @@ class ProfileDashboardView(LoginRequiredMixin, TemplateView):
         ctx['commissions'] = Commission.object.filter(maker=user)
 
         return ctx
+    
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
