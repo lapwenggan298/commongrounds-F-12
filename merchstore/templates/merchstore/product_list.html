@@ -1,19 +1,35 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block content %}
     <h1>Products</h1>
+    <p><a href="{% url 'merchstore:product_create' %}">Add a new product</a></p>
 
-    <ul>
-        {% for product in merchstore %}
-            <li>
-                <a href="{% url 'merchstore:product_detail' product.pk %}">
-                    {{ product.name }}
-                </a>
-            </li>
-        {% empty %}
-            <li>None available.</li>
-        {% endfor %}
-    </ul>
+    {% if my_products %}
+        <section>
+            <h2>Your products</h2>
+            <ul>
+                {% for product in my_products %}
+                    <li>
+                        <a href="{% url 'merchstore:product_detail' product.pk %}">{{ product.name }}</a>
+                        ({{ product.get_status_display }}, {{ product.stock }} available)
+                        <a href="{% url 'merchstore:product_update' product.pk %}">Edit</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
 
+    <section>
+        <h2>All products</h2>
+        <ul>
+            {% for product in products %}
+                <li>
+                    <a href="{% url 'merchstore:product_detail' product.pk %}">{{ product.name }}</a>
+                    ({{ product.get_status_display }}, {{ product.stock }} available)
+                </li>
+            {% empty %}
+                <li>No products available.</li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock %}
-   

@@ -5,5 +5,5 @@ from .models import Profile
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = 'display_name'
+        fields = ['display_name']
 
