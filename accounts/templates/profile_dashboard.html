@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <a href = "{% url 'home' %}">Back to Home Page</a>
+
+    {% if user.is_authenticated %}
+    <h2>{{ request.user.profile.display_name}}'s Dashboard</h2>
+
+    <a href = "{% url 'accounts:profile_update'}">Update Display Name?</a>
+  
+    <h3>Products Sold</h3>
+        <ul>
+            {% for product in products %}
+            <li>{{ product.name }} - ${{ product.price }}</li>
+            {% empty %}
+            <li>You haven't listed any products yet.</li>
+            {% endfor %}
+        </ul>
+
+    <h3>Events Organized</h3>
+        <ul>
+            {% for event in events %}
+            <li>{{ event.title }} on {{ event.date }}</li>
+            {% empty %}
+            <li>You haven't organized any events yet.</li>
+            {% endfor %}
+        </ul>
+
+    <h3>Books Contributed</h3>
+        <ul>
+            {% for book in books %}
+            <li>{{ book.title }}</li>
+            {% empty %}
+            <li>No book contributions yet.</li>
+            {% endfor %}
+        </ul>
+
+    <h3>Projects</h3>
+        <ul>
+            {% for project in projects %}
+            <li>{{ project.title }}</li>
+            {% empty %}
+            <li>No projects created yet.</li>
+            {% endfor %}
+        </ul>
+
+    <h3>Commissions</h3>
+        <ul>
+            {% for commission in commissions %}
+            <li>{{ commission.title }}</li>
+            {% empty %}
+            <li>No commissions created yet.</li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p>You are not logged in or do not have an account.</p>
+        <a href = "{% url 'login' %}">Log In</a>
+
+{% endblock %}

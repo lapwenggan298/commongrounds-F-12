@@ -1,0 +1,26 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Your Cart</h1>
+
+    {% if transactions_by_owner %}
+        {% for seller, transactions in transactions_by_owner %}
+            <section>
+                <h2>Seller: {{ seller }}</h2>
+                <ul>
+                    {% for transaction in transactions %}
+                        <li>
+                            <a href="{% url 'merchstore:product_detail' transaction.product.pk %}">{{ transaction.product.name }}</a>
+                            — Qty: {{ transaction.amount }}
+                            — Status: {{ transaction.get_status_display }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endfor %}
+    {% else %}
+        <p>No cart items yet.</p>
+    {% endif %}
+
+    <p><a href="{% url 'merchstore:product_list' %}">Back to products</a></p>
+{% endblock %}

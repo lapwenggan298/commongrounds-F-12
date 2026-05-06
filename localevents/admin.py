@@ -21,7 +21,7 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = (
         'title',
         'location',
-        'description'
+        'description',
     )
 
 @admin.register(EventSignup)

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Commongrounds Project</h1>
+
+  {% if request.user.is_authenticated %}
+			Hello, {{ request.user }}
+			    <form method="POST" action=" {% url 'logout' %} ">
+					{% csrf_token %}
+					<button type = "submit">Logout</button>
+				</form>
+		{% else %}
+			<a href = "{% url 'login' %}">Login</a>
+	{% endif %}
+
+  <ul>
+    <li><a href="{% url 'accounts:profile_dashboard' %}">My Profile Dashboard</a></li>
+  </ul>
+  
+  <p>Apps:</p>
+  <ul>
+    <li><a href="{% url 'merchstore:product_list' %}">Merchstore</a></li>
+    <li><a href="{% url 'localevents:event-list' %}">Local Events</a></li>
+    <li><a href="{% url 'bookclub:book_list' %}">Bookclub</a></li>
+    <li><a href="{% url 'diyprojects:project_list' %}">Diy Projects</a></li>
+    <li><a href="{% url 'commissions:commission_list' %}">Commissions</a></li>
+  </ul>
+{% endblock %}
