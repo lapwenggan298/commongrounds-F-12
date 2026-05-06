@@ -1,5 +1,5 @@
-from django.contrib import admin
-from .models import Product, ProductType
+﻿from django.contrib import admin
+from .models import Product, ProductType, Transaction
 
 # Register your models here.
 @admin.register(ProductType)
@@ -14,6 +14,22 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "price",
+        "stock",
+        "status",
+        "owner",
     )
     search_fields = ("name",)
-    list_filter = ("price", "name",)
+    list_filter = ("status", "type",)
+
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = (
+        "product",
+        "buyer",
+        "amount",
+        "status",
+        "created_on",
+    )
+    list_filter = ("status",)
+    search_fields = ("product__name", "buyer__user__username",)

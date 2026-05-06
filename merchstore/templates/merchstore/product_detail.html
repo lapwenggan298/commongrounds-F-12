@@ -1,11 +1,33 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block content %}
     <h1>{{ product.name }}</h1>
 
+    {% if product.product_image %}
+        <img src="{{ product.product_image.url }}" alt="{{ product.name }}" style="max-width:320px; display:block; margin-bottom:1rem;" />
+    {% endif %}
+
+    <p><strong>Price:</strong> ₱{{ product.price }}</p>
+    <p><strong>Stock:</strong> {{ product.stock }}</p>
+    <p><strong>Status:</strong> {{ product.get_status_display }}</p>
+    <p><strong>Type:</strong> {{ product.type }}</p>
+    <p><strong>Seller:</strong> {{ product.owner }}</p>
     <p>{{ product.description }}</p>
 
-    <a href="{% url 'merchstore:product_list' %}">
-        Back to product list
-    </a>
+    <p><a href="{% url 'merchstore:product_list' %}">Back to products</a></p>
+
+    {% if request.user.is_authenticated and request.user.profile == product.owner %}
+        <p><a href="{% url 'merchstore:product_update' product.pk %}">Edit product</a></p>
+    {% endif %}
+
+    {% if product.stock > 0 and not (request.user.is_authenticated and request.user.profile == product.owner) %}
+        <h2>Buy this product</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add to cart</button>
+        </form>
+    {% elif product.stock == 0 %}
+        <button type="button" disabled>Out of stock</button>
+    {% endif %}
 {% endblock %}
