@@ -16,9 +16,9 @@ class UserAdmin(BaseUserAdmin):
 
 class ProfileAdmin(admin.ModelAdmin):
     model = Profile
-    list_display = ('user', 'display_name', 'role')
-    list_filter = ('role')
-    search_fields = ('user__username', 'display_name')
+    list_display = ('user', 'display_name', 'role',)
+    list_filter = ('role',)
+    search_fields = ('user__username', 'display_name',)
 
 
 admin.site.unregister(User)
