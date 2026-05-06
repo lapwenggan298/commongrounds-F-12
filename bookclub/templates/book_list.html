@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+	{% block content %}
+	<h1>Book List</h1>
+	
+	<ul>
+		{% for book in book_list %}
+			<li>
+				<a href = "{{ book.get_absolute_url }}"> 
+					{{book.title}} 
+				</a>
+			</li>
+		{% empty %}
+			<p>Seems like there's no books in our list yet.</p>
+		{% endfor %}
+	</ul>
+
+{% endblock %}
