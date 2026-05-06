@@ -27,5 +27,5 @@ urlpatterns = [
     path('diyprojects/', include('diyprojects.urls', namespace='diyprojects')),
     path('commissions/', include('commissions.urls', namespace='commissions')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', include(HomeView.as_view(), name='home')),
+    path('', HomeView.as_view(), name='home'),
 ]
