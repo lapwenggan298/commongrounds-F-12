@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Sign Up for: {{ event.title }}</h2>
+
+<div class="event-info" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+    {% if event.event_image %}
+        <img src="{{ event.event_image.url }}" alt="{{ event.title }}" style="max-width: 200px; display: block; margin-bottom: 10px;">
+    {% endif %}
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Date & Time:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+    <p><strong>Description:</strong> {{ event.description }}</p>
+</div>
+
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Please enter your name to register:</label>[cite: 1]
+        <input type="text" name="name" id="name" required class="form-control">
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Confirm Sign Up</button>[cite: 1]
+        <a href="{% url 'localevents:event-detail' event.pk %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+{% endblock %}
