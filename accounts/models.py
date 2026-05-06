@@ -22,8 +22,8 @@ class Profile(models.Model):
         default="MEMBER",
     )
 
-    class Meta:
-        ordering = ['user__username']
-        
     def __str__(self):
         return self.display_name or self.user.username
+
+    class Meta:
+        ordering = ['user__username']

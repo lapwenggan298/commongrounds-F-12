@@ -7,3 +7,4 @@ Apps:
 - Book Club (Luis Andrei Pagkaliwangan)
 - DIY Projects (Joshua Dame Calanno)
 - Commission Requests (Jurvick Dietrich Tan)
+- Accounts (Michel Kristof Cabatana and Luis Andrei Pagkaliwangan)
