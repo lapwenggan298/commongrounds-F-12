@@ -66,9 +66,13 @@ class ProjectReview(models.Model):
         on_delete=models.CASCADE,
     )
     comment = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(null=True)
 
 class ProjectRating(models.Model):
+    project = models.ForeignKey(
+        "Project",
+        on_delete=models.CASCADE, 
+    )
     profile = models.ForeignKey(
         "accounts.Profile",
         on_delete=models.CASCADE

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.db.models import Avg
 from .models import Project, Favorite, ProjectReview, ProjectRating
 
 class ProjectListView(ListView):
@@ -23,7 +24,7 @@ class ProjectListView(ListView):
             
             context['created_projects'] = created
             context['favorites'] = favorited
-            context['reviewes'] = reviewed
+            context['reviews'] = reviewed
             
             context['all_projects'] = Project.objects.exclude(
                     id__in=created_ids
@@ -40,3 +41,13 @@ class ProjectDetailView(DetailView):
     model = Project
     template_name = "diyprojects/project_detail.html"
     context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        average = ProjectRating.objects.filter(
+                project=self.object
+            ).aggregate(avg=Avg('score'))['avg']
+        
+        context['average_score'] = average
+
+        return context
