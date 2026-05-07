@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator 
 
 
 class ProjectCategory(models.Model):
@@ -33,3 +34,36 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return self.title
+    
+class Favorite(models.Model):
+    project = models.ForeignKey(
+        "Project",
+        on_delete=models.CASCADE,
+    )
+    profile = models.ForeignKey(
+        "Profile",
+        on_delete=models.CASCADE,
+    )
+    date_favorited = models.DateTimeField(auto_now_add=True)
+    status_choices = [
+        ('Backlog', 'Backlog'),
+        ('To-Do', 'To-Do'),
+        ('Done', 'Done'),
+    ]
+    project_status = models.CharField(choices=status_choices,default='Backlog')
+
+class ProjectReview(models.Model):
+    reviewer = models.ForeignKey(
+        "Profile",
+        on_delete=models.CASCADE,
+    )
+    comment = models.TextField()
+    image = models.ImageField()
+
+class ProjectRating(models.Model):
+    profile = models.ForeignKey(
+        "Profile",
+        on_delete=models.CASCADE
+    )
+    score = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
+
