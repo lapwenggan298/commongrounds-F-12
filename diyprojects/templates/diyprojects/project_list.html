@@ -2,7 +2,9 @@
 
 {% block content %}
 
-<p><a href="PLACEHOLDER-----">Create New Project</a></p>
+{% if is_creator %}
+    <p><a href="{% url 'diyprojects:create_project' %}">Create a New Project</a></p>
+{% endif %}
 
 {% if request.user.is_authenticated %}
 
@@ -10,7 +12,7 @@
     <ul>
         {% for project in created_projects %}
             <li>
-                <a href="../project/{{ project.pk }}">{{ project.title }}</a>
+                <a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a>
             </li>
         {% empty %}
             <li>No projects created yet~</li>
@@ -21,7 +23,7 @@
     <ul>
         {% for favorite in favorites %}
             <li>
-                <a href="../project/{{ favorite.project.pk }}">{{ favorite.project.title }}({{ favorite.project_status }})</a>
+                <a href="{% url 'diyprojects:project_detail' favorite.project.pk %}">{{ favorite.project.title }}({{ favorite.project_status }})</a>
             </li>
         {% empty %}
             <li>No projects favorited yet~</li>
@@ -32,7 +34,7 @@
     <ul>
         {% for review in reviews %}
             <li>
-                <a href="../project/{{ review.project.pk }}">{{ review.project.title }}</a>
+                <a href="{% url 'diyprojects:project_detail' review.project.pk %}">{{ review.project.title }}</a>
             </li>
         {% empty %}
             <li>No projects reviewed yet~</li>
@@ -47,7 +49,7 @@
     <ul>
         {% for project in all_projects %}
             <li>
-                <a href="../project/{{ project.pk }}">{{ project.title }}</a>
+                <a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a>
             </li>
         {% empty %}
             <li>No projects just yet~</li>

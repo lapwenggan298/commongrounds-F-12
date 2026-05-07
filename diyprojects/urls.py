@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ProjectListView, ProjectDetailView
+from .views import ProjectListView, ProjectDetailView, ProjectCreateView, ProjectUpdateView
 
 urlpatterns = [
     path(
@@ -27,6 +27,16 @@ urlpatterns = [
         "project/<int:pk>/review/", 
         views.add_review, 
         name="add_review"
+    ), 
+    path(
+        "project/<int:pk>/edit/", 
+        ProjectUpdateView.as_view(), 
+        name="edit_project"
+    ),
+    path(
+        "project/add", 
+        ProjectCreateView.as_view(), 
+        name='create_project'
     ), 
 ]
 
