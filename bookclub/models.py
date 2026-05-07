@@ -22,11 +22,11 @@ class Book(models.Model):
     synopsis = models.TextField(blank=True)
     available_to_borrow = models.BooleanField()
 
-    #contributor = models.ForeignKey(
-    #   Profile class/model,
-    #   on_delete=models.SET_NULL,
-    #   related_name='books_contributed_to/uploaded',
-    # )
+    contributor = models.ForeignKey(
+       'accounts.Profile',
+       on_delete=models.SET_NULL,
+       related_name='books_contributed_to',
+    )
 
     genre = models.ForeignKey(
         Genre,
@@ -51,11 +51,11 @@ class BookReview(models.Model):
     anon_reviewer = models.TextField(blank=True)
     comment = models.TextField(blank=True)
 
-    #user_review = models.ForeignKey(
-    #   Profile class/model,
-    #   on_delete=models.CASCADE,
-    #   related_name='book_reviews',
-    # )
+    user_review = models.ForeignKey(
+       'accounts.Profile',
+       on_delete=models.CASCADE,
+       related_name='book_reviews',
+    )
 
     book = models.ForeignKey(
         Book,
@@ -67,11 +67,11 @@ class BookReview(models.Model):
 class Bookmark(models.Model):
     date_bookmarked = models.DateField()
 
-    #profile = models.ForeignKey(
-    #   Profile class/model,
-    #   on_delete=models.CASCADE,
-    #   related_name='books_bookmarked',
-    #)
+    profile = models.ForeignKey(
+       'accounts.Profile',
+       on_delete=models.CASCADE,
+       related_name='books_bookmarked',
+    )
 
     book = models.ForeignKey(
         Book,
@@ -85,14 +85,14 @@ class Borrow(models.Model):
     date_to_return = models.DateField()
     name = models.CharField()
 
-    #borrower = models.ForeignKey(
-    #   Profile class/model,
-    #   on_delete=models.CASCADE,
-    #   related_name='borrowed_books',
-    # )
-
     book = models.ForeignKey(
         Book,
         on_delete=models.CASCADE,
         related_name='borrowed',
+    )
+
+    borrower = models.ForeignKey(
+        'accounts.Profile',
+        on_delete=models.CASCADE,
+        related_name='borrowed_books',
     )

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+	{% block content %}
+	<h2>Borrowing: {{book.title}}</h2>
+
+	<form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <p><small>Note: Return date is strictly 14 days from your chosen borrow date.</small></p>
+
+        <button type="submit">Confirm Borrowing of Book</button>
+    </form>
+	
+{% endblock %}
