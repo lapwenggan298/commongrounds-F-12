@@ -4,7 +4,8 @@
 {% block content %}
     <h1>{{ project.title }}</h1>
     <p><i>Project type: {{ project.category.name }}</i></p>
-    <p><i>Score: {{ average_score }}</i></p>
+    <p><i>Score: {{ average_score }} | Favorites: {{ favorite_count}} </i></p>
+    <p><a href="PLACEHOLDER-----">Favorite</a></p>
 
     <p>{{ project.description }}</p>
 

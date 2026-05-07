@@ -32,8 +32,7 @@ class ProjectListView(ListView):
                     id__in=favorited_ids
                 ).exclude(
                     id__in=reviewed_ids
-                )
-            
+                )      
         return context
 
 
@@ -44,10 +43,15 @@ class ProjectDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         average = ProjectRating.objects.filter(
                 project=self.object
             ).aggregate(avg=Avg('score'))['avg']
-        
         context['average_score'] = average
+
+        favorite_count = Favorite.objects.filter(
+            project=self.object
+            ).count()
+        context['favorite_count'] = favorite_count
 
         return context
