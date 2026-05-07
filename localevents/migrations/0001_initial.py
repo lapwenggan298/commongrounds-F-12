@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='CommissionType',
+            name='EventType',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
@@ -24,15 +24,17 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Commission',
+            name='Event',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=255)),
                 ('description', models.TextField()),
-                ('people_required', models.PositiveIntegerField()),
+                ('location', models.CharField(max_length=255)),
+                ('start_time', models.DateTimeField()),
+                ('end_time', models.DateTimeField()),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True)),
-                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='commissions', to='commissions.commissiontype')),
+                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='events', to='localevents.eventtype')),
             ],
             options={
                 'ordering': ['-created_on'],
