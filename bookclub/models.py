@@ -25,6 +25,7 @@ class Book(models.Model):
     contributor = models.ForeignKey(
        'accounts.Profile',
        on_delete=models.SET_NULL,
+       null=True,
        related_name='books_contributed_to',
     )
 
