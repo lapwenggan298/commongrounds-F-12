@@ -59,7 +59,7 @@
 	{% else %}
 	<!--if user is not a contributor/authorized-->
 	<ul>
-		{% for book in book_list %}
+		{% for book in all_books %}
 			<li>
 				<a href = "{{ book.get_absolute_url }}"> 
 					{{book.title}} 

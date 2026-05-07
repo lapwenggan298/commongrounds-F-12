@@ -27,14 +27,14 @@ class BookListView(ListView):
             profile = user.profile
 
             contributed = Book.objects.filter(contributor=profile)
-            bookmarked = Book.objects.filter(bookmark__user=self.request.user)
+            bookmarked = Book.objects.filter(bookmarks__profile=profile)
             reviewed = Book.objects.filter(reviews__user_review=profile).distinct()
 
             context['contributed'] = contributed
             context['bookmarked'] = bookmarked
             context['reviewed'] = reviewed
             
-            exclude_ids = exclude_ids = list(contributed.values_list('id', flat=True)) + list(bookmarked.values_list('id', flat=True)) + list(reviewed.values_list('id', flat=True))
+            exclude_ids = list(contributed.values_list('id', flat=True)) + list(bookmarked.values_list('id', flat=True)) + list(reviewed.values_list('id', flat=True))
 
             context['all_books'] = Book.objects.exclude(id__in=exclude_ids)
 
@@ -53,7 +53,7 @@ class BookDetailView(DetailView):
         profile = getattr(self.request.user, 'profile', None)
         context['review_form'] = form_class(user_profile=profile)
         
-        context['bookmark_count'] = book.bookmark_set.count()
+        context['bookmark_count'] = book.bookmarks.count()
         
         active_borrow = Borrow.objects.filter(book=book, date_to_return__gte=timezone.now().date()).exists()
         context['is_available'] = book.available_to_borrow and not active_borrow
@@ -69,6 +69,12 @@ class BookDetailView(DetailView):
         if form.is_valid():
             review = form.save(commit=False)
             review.book = self.object
+
+            if request.user.is_authenticated:
+                review.user_review = profile
+            else:
+                review.user_review = None
+                
             review.save()
             return redirect(self.object.get_absolute_url())
         

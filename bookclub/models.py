@@ -55,6 +55,8 @@ class BookReview(models.Model):
     user_review = models.ForeignKey(
        'accounts.Profile',
        on_delete=models.CASCADE,
+       null=True,
+       blank=True,
        related_name='book_reviews',
     )
 
@@ -72,6 +74,7 @@ class Bookmark(models.Model):
        'accounts.Profile',
        on_delete=models.CASCADE,
        related_name='books_bookmarked',
+       null=True,
     )
 
     book = models.ForeignKey(
@@ -95,5 +98,7 @@ class Borrow(models.Model):
     borrower = models.ForeignKey(
         'accounts.Profile',
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name='borrowed_books',
     )
