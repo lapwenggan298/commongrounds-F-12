@@ -1,16 +1,54 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-    <h1>DIY Projects</h1>
 
+{% if request.user.is_authenticated %}
+
+    <h1>Projects You Created</h1>
     <ul>
-        {% for project in projects %}
+        {% for project in created_projects %}
             <li>
                 <a href="../project/{{ project.pk }}">{{ project.title }}</a>
             </li>
         {% empty %}
-            <p>No projects just yet~</p>
+            <li>No projects created yet~</li>
+        {% endfor %}
+    </ul>
+
+    <h1>Projects You Favorited</h1>
+    <ul>
+        {% for favorite in favorites %}
+            <li>
+                <a href="../project/{{ favorite.project.pk }}">{{ favorite.project.title }}({{ favorite.project_status }})</a>
+            </li>
+        {% empty %}
+            <li>No projects favorited yet~</li>
+        {% endfor %}
+    </ul>
+
+    <h1>Projects You Reviewed</h1>
+    <ul>
+        {% for review in reviews %}
+            <li>
+                <a href="../project/{{ review.project.pk }}">{{ review.project.title }}</a>
+            </li>
+        {% empty %}
+            <li>No projects reviewed yet~</li>
+        {% endfor %}
+    </ul>
+
+    <h1>Other Projects</h1>
+{% else %}
+    <h1>DIY Projects</h1>
+{% endif %}
+
+    <ul>
+        {% for project in all_projects %}
+            <li>
+                <a href="../project/{{ project.pk }}">{{ project.title }}</a>
+            </li>
+        {% empty %}
+            <li>No projects just yet~</li>
         {% endfor %}
     </ul>
 {% endblock %}

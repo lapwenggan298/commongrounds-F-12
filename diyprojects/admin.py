@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, ProjectCategory
+from .models import Project, ProjectCategory, Favorite
 
 
 class ProjectInline(admin.TabularInline):
@@ -26,8 +26,21 @@ class ProjectAdmin(admin.ModelAdmin):
         "updated_on", 
     )
     search_fields = ("title", )
-    list_filter = ("created_on", "category", )  
+    list_filter = ("created_on", "category", )
+
+
+class FavoriteAdmin(admin.ModelAdmin):
+    model = Favorite
+    inline = [ProjectInline]
+    list_display = (
+        "project", 
+        "profile", 
+        "date_favorited", 
+        "project_status", 
+    )
+    ordering = ("date_favorited", )
 
 
 admin.site.register(ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
