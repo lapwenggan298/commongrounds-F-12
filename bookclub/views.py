@@ -3,9 +3,11 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django import forms
 from datetime import timedelta
+from django.utils import timezone
 
 from .models import Book, BookReview, Bookmark, Borrow
 from .forms import BookFormFactory
@@ -19,15 +21,20 @@ class BookListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            profile = self.request.user.profile
+        user = self.request.user
 
-            context['book_contributor'] = (profile.role == "BOOK_CONTRIBUTOR")
-            context['contributed'] = Book.objects.filter(contributor=profile)
-            context['bookmarked'] = Book.objects.filter(bookmark__user=self.request.user)
-            context['reviewed'] = Book.objects.filter(reviews__user_review=profile).distinct()
+        if self.request.user.is_authenticated:
+            profile = user.profile
+
+            contributed = Book.objects.filter(contributor=profile)
+            bookmarked = Book.objects.filter(bookmark__user=self.request.user)
+            reviewed = Book.objects.filter(reviews__user_review=profile).distinct()
+
+            context['contributed'] = contributed
+            context['bookmarked'] = bookmarked
+            context['reviewed'] = reviewed
             
-            exclude_ids = (context['contributed'] | context['bookmarked'] | context['reviewed']).values_list('id', flat=True)
+            exclude_ids = exclude_ids = list(contributed.values_list('id', flat=True)) + list(bookmarked.values_list('id', flat=True)) + list(reviewed.values_list('id', flat=True))
 
             context['all_books'] = Book.objects.exclude(id__in=exclude_ids)
 
@@ -47,7 +54,9 @@ class BookDetailView(DetailView):
         context['review_form'] = form_class(user_profile=profile)
         
         context['bookmark_count'] = book.bookmark_set.count()
-        context['is_borrowed'] = Borrow.objects.filter(book=book, returned=False).exists()
+        
+        active_borrow = Borrow.objects.filter(book=book, date_to_return__gte=timezone.now().date()).exists()
+        context['is_available'] = book.available_to_borrow and not active_borrow
         return context
     
     def post(self, request, *args, **kwargs):
@@ -96,13 +105,12 @@ class BookUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
         return BookFormFactory.getForm("update")
     
     def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-
         if not request.user.is_anonymous:
             book = self.get_object()
             if book.contributor != request.user.profile:
                 raise PermissionDenied("You can only edit books you contributed to.")
         
+        response = super().dispatch(request, *args, **kwargs)
         return response
 
     def get_success_url(self):
@@ -111,19 +119,28 @@ class BookUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
 class BookBorrowView(CreateView):
     model = Borrow
-    fields = ['borrower_name', 'borrow_date']
+    fields = ['name', 'date_borrowed']
     template_name = 'book_borrow.html'
 
-    def get_initial(self):
-        initial = super().get_initial()
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
         if self.request.user.is_authenticated:
-            initial['borrower_name'] = self.request.user.profile.display_name
-        return initial
+            form.fields['name'].required = False
+            form.fields['name'].widget = forms.HiddenInput()
+        return form
 
     def form_valid(self, form):
-        form.instance.book = Book.objects.get(pk=self.kwargs['pk'])
+        form.instance.book = get_object_or_404(Book, pk=self.kwargs['pk'])
         
-        form.instance.return_date = form.cleaned_data['borrow_date'] + timedelta(days=14)
+        if self.request.user.is_authenticated:
+            form.instance.borrower = self.request.user.profile
+            form.instance.name = self.request.user.profile.display_name
+        else:
+            if not form.cleaned_data.get('name'):
+                form.add_error('name', 'Please provide a name to borrow this book.')
+                return self.form_invalid(form)
+    
+        form.instance.date_to_return = form.cleaned_data['date_borrowed'] + timedelta(days=14)    
         return super().form_valid(form)
     
     def get_success_url(self):

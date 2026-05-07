@@ -4,9 +4,10 @@
 	<h1>Book List</h1>
 
 	{% if request.user.is_authenticated %}
-	<!--Conditional if user is contributor/authorized-->
-		{% if  }
+	<!--if user is contributor/authorized-->
+		{% if request.user.profile.role == "BOOK_CONTRIBUTOR" %}
 		<a href = "{% url 'bookclub:book_create' %}">Add/Create a New Book</a>
+		{% endif %}
 		{% if contributed %}
 			<h2>Your Contributions</h2>
 				<ul>
@@ -56,7 +57,7 @@
 			</ul>
 				
 	{% else %}
-	<!--Conditional if user is not a contributor/authorized-->
+	<!--if user is not a contributor/authorized-->
 	<ul>
 		{% for book in book_list %}
 			<li>

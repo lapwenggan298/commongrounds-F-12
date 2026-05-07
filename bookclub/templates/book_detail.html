@@ -19,16 +19,15 @@
 
 	<br>
 	<p>Available to Borrow? </p>
-	<p>{% if book.available_to_borrow and not is_borrowed %} Available {% else %} Unavailable {% endif %}</p>
+	<p>{% if is_available %} Available {% else %} Unavailable {% endif %}</p>
 
 	<!--Conditional if user is contributor-->	
-	{% if user.is_authenticated and user.profile == book.contributor %}
+	{% if request.user.is_authenticated and request.user.profile == book.contributor %}
 	<br>
 		<a href = "{% url 'bookclub:book_edit' book.pk %}"> Edit Book Detail(s) </a>
 	{% endif %}
 
-	<!--Conditional if book is available -->
-	{% if not is_borrowed and book.available_to_borrow %}
+	{% if is_available %}
 	<br>
 		<a href = "{% url 'bookclub:book_borrow' book.pk %}"> Borrow Book </a>
 	{% endif %}
