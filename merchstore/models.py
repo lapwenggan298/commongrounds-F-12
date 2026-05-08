@@ -4,7 +4,7 @@ from django.urls import reverse
 
 class ProductType(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -34,7 +34,7 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=255)
     product_image = models.ImageField(upload_to="merchstore/", blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
     status = models.CharField(

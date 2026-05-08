@@ -27,6 +27,8 @@ class BookListView(ListView):
         if self.request.user.is_authenticated:
             profile = user.profile
 
+            context['is_contributor'] = profile.roles.filter(name="BOOK_CONTRIBUTOR")
+
             contributed = Book.objects.filter(contributor=profile)
             bookmarked = Book.objects.filter(bookmarks__profile=profile)
             reviewed = Book.objects.filter(reviews__user_review=profile).distinct()
@@ -60,6 +62,7 @@ class BookDetailView(DetailView):
         context['is_available'] = book.available_to_borrow and not active_borrow
 
         if self.request.user.is_authenticated:
+            context['is_contributor'] = self.request.user.profile.roles.filter(name="BOOK_CONTRIBUTOR")
             context['is_bookmarked'] = book.bookmarks.filter(profile=self.request.user.profile).exists()
         else:
             context['is_bookmarked'] = False
@@ -113,7 +116,7 @@ class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     success_url = reverse_lazy('bookclub:book_list')
 
     def test_func(self):
-        return self.request.user.profile.role == "BOOK_CONTRIBUTOR"
+        return self.request.user.profile.roles.filter(name="BOOK_CONTRIBUTOR").exists()
 
     def get_form_class(self):
         return BookFormFactory.getForm("contribute")

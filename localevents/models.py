@@ -3,7 +3,7 @@ from django.urls import reverse
 
 class EventType(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ['name']
@@ -27,7 +27,7 @@ class Event(models.Model):
     
     organizer = models.ManyToManyField('accounts.Profile') 
     event_image = models.ImageField(upload_to='events/')
-    description = models.TextField()
+    description = models.TextField(blank=True)
     location = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()

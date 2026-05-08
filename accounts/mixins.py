@@ -13,7 +13,8 @@ class RoleRequiredMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        if not hasattr(request.user, 'profile') or request.user.profile.role != self.required_role:
+        has_profile = hasattr(request.user, 'profile')
+        if not has_profile or not request.user.profile.roles.filter(name=self.required_role).exists():
             self.raise_exception = True 
             return self.handle_no_permission()
 

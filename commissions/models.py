@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class CommissionType(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -34,7 +34,7 @@ class Commission(models.Model):
         "accounts.Profile",
         on_delete=models.CASCADE,)
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     people_required = models.PositiveIntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

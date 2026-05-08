@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -27,9 +27,9 @@ class Project(models.Model):
         "accounts.Profile", 
         on_delete=models.CASCADE, 
     )
-    description = models.TextField()
-    materials = models.TextField()
-    steps = models.TextField()
+    description = models.TextField(blank=True)
+    materials = models.TextField(blank=True)
+    steps = models.TextField(blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 

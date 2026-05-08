@@ -4,8 +4,7 @@
 	<h1>Book List</h1>
 
 	{% if request.user.is_authenticated %}
-	<!--if user is contributor/authorized-->
-		{% if request.user.profile.role == "BOOK_CONTRIBUTOR" %}
+		{% if is_contributor %}
 		<a href = "{% url 'bookclub:book_create' %}">Add/Create a New Book</a>
 		{% endif %}
 		
@@ -19,7 +18,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>No contributions yet.</p>
+			<ul><p>No contributions yet.</p></ul>
 		{% endif %}
 		
 		<h2>Your Bookmarks</h2>
@@ -32,7 +31,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<li>No books bookmarked yet.</li>
+			<ul><p>No books bookmarked yet. </p></ul>
 		{% endif %}
 
 		<h2>Books You Reviewed</h2>
@@ -45,7 +44,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<p>No reviewed books yet.</p>
+			<ul><p>No reviewed books yet.</p></ul>
 		{% endif %}
 	
 		<h2>All Other Books</h2>
@@ -60,7 +59,7 @@
 			</ul>
 				
 	{% else %}
-	<!--if user is not a contributor/authorized-->
+
 	<ul>
 		{% for book in all_books %}
 			<li>

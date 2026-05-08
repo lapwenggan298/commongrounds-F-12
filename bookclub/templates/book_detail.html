@@ -34,9 +34,8 @@
 		</button>
 	</form>
 	{% endif %}
-
-	<!--Conditional if user is contributor-->	
-	{% if request.user.is_authenticated and request.user.profile == book.contributor %}
+	
+	{% if request.user.is_authenticated and is_contributor %}
 	<br>
 		<a href = "{% url 'bookclub:book_edit' book.pk %}"> Edit Book Detail(s) </a>
 	{% endif %}

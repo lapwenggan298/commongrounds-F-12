@@ -17,15 +17,6 @@ class Profile(models.Model):
     display_name = models.CharField(max_length=63)
     email_address = models.EmailField()
 
-    # ROLE_CHOICES = [
-    #     ("MEMBER", "Member"),
-    #     ("MARKET_SELLER", "Market Seller"),
-    #     ("EVENT_ORGANIZER", "Event Organizer"),
-    #     ("BOOK_CONTRIBUTOR", "Book Contributor"),
-    #     ("PROJECT_CREATOR", "Project Creator"),
-    #     ("COMMISSION_MAKER", "Commission Maker"),
-    # ]
-
     roles = models.ManyToManyField(
         Role,
         related_name='profiles',
@@ -46,7 +37,3 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     else:
         if hasattr(instance, 'profile'):
             instance.profile.save()
-
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.profile.save()
