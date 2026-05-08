@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Create Commission</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input type="text" name="title" placeholder="Title">
+    <textarea name="description"></textarea>
+
+    <input type="number" name="people_required">
+
+    <h3>Job</h3>
+    <input type="text" name="role" placeholder="Role">
+    <input type="number" name="manpower_required">
+
+    <button type="submit">Create</button>
+</form>
+
+{% endblock %}

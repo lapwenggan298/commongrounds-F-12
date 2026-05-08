@@ -11,10 +11,39 @@
         {% endif %}
     </p>
 
+    <p><strong>Total Manpower:</strong> {{ summary.total_manpower }}</p>
+    <p><strong>Open Manpower:</strong> {{ summary.open_manpower }}</p>
     <p><strong>People Required:</strong> {{ commission.people_required }}</p>
     <p><strong>Created On:</strong> {{ commission.created_on }}</p>
     <p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
 
+    {% if user.is_authenticated and commission.maker == user.profile %}
+    <a href="{% url 'commissions:commission_update' commission.pk %}">
+        Edit Commission
+    </a>
+{% endif %}
+
+   <h2>Jobs</h2>
+
+    {% for job in commission.jobs.all %}
+        <div>
+            <h3>{{ job.role }}</h3>
+            <p>Status: {{ job.status }}</p>
+
+            {% if user.is_authenticated and job.status == "OPEN" %}
+                <form method="post" action="{% url 'commissions:apply_to_job' job.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">Apply to Job</button>
+                </form>
+            {% else %}
+                <button disabled>Full</button>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No jobs available.</p>
+    {% endfor %}
+
+<br>
     <a href="{% url 'commissions:commission_list' %}">
         Back to commissions list
     </a>
