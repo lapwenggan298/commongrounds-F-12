@@ -21,6 +21,20 @@
 	<p>Available to Borrow? </p>
 	<p>{% if is_available %} Available {% else %} Unavailable {% endif %}</p>
 
+	{% if request.user.is_authenticated %}
+	<br>
+	<form method="POST">
+		{% csrf_token %}
+		<button type="submit" name="toggle_bookmark">
+			{% if is_bookmarked %}
+				Remove Bookmark
+			{% else %}
+				Bookmark
+			{% endif %}
+		</button>
+	</form>
+	{% endif %}
+
 	<!--Conditional if user is contributor-->	
 	{% if request.user.is_authenticated and request.user.profile == book.contributor %}
 	<br>

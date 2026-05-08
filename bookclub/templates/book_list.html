@@ -8,41 +8,44 @@
 		{% if request.user.profile.role == "BOOK_CONTRIBUTOR" %}
 		<a href = "{% url 'bookclub:book_create' %}">Add/Create a New Book</a>
 		{% endif %}
+		
+		<h2>Your Contributions</h2>
 		{% if contributed %}
-			<h2>Your Contributions</h2>
-				<ul>
-					{% for b in contributed %}
-					<li>
-						<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
-					</li>
-					{% empty %}
-            			<li>No contributions yet.</li>
-					{% endfor %}
-				</ul>
+			<ul>
+				{% for b in contributed %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>No contributions yet.</p>
 		{% endif %}
+		
+		<h2>Your Bookmarks</h2>
 		{% if bookmarked %}
-			<h2>Your Bookmarks</h2>
-				<ul>
-					{% for b in bookmarked %}
-					<li>
-						<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
-					</li>
-					{% empty %}
-            			<li>No books bookmarked yet.</li>
-					{% endfor %}
-				</ul>
+			<ul>
+				{% for b in bookmarked %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<li>No books bookmarked yet.</li>
 		{% endif %}
+
+		<h2>Books You Reviewed</h2>
 		{% if reviewed %}
-			<h2>Books You Reviewed</h2>
-				<ul>
-					{% for b in reviewed %}
-					<li>
-						<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
-					</li>
-					{% empty %}
-            			<li>No reviewed books.</li>
-					{% endfor %}
-				</ul>
+			<ul>
+				{% for b in reviewed %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>No reviewed books yet.</p>
 		{% endif %}
 	
 		<h2>All Other Books</h2>

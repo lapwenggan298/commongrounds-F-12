@@ -2,6 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -57,13 +58,33 @@ class BookDetailView(DetailView):
         
         active_borrow = Borrow.objects.filter(book=book, date_to_return__gte=timezone.now().date()).exists()
         context['is_available'] = book.available_to_borrow and not active_borrow
+
+        if self.request.user.is_authenticated:
+            context['is_bookmarked'] = book.bookmarks.filter(profile=self.request.user.profile).exists()
+        else:
+            context['is_bookmarked'] = False
+
         return context
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form_class = BookFormFactory.getForm("review")
         profile = getattr(request.user, 'profile', None)
         
+        if 'toggle_bookmark' in request.POST:
+            bookmark_qs = Bookmark.objects.filter(book=self.object, profile=profile)
+
+            if bookmark_qs.exists():
+                bookmark_qs.delete()
+            else:
+                Bookmark.objects.create(
+                    book=self.object,
+                    profile=profile,
+                    date_bookmarked=timezone.now().date(),
+                )
+
+            return redirect(self.object.get_absolute_url())
+        
+        form_class = BookFormFactory.getForm("review")
         form = form_class(request.POST, user_profile=profile)
         
         if form.is_valid():
@@ -74,12 +95,13 @@ class BookDetailView(DetailView):
                 review.user_review = profile
             else:
                 review.user_review = None
-                
+
             review.save()
             return redirect(self.object.get_absolute_url())
         
         context = self.get_context_data(object=self.object)
         context['review_form'] = form
+
         return self.render_to_response(context)
 
 
@@ -99,6 +121,7 @@ class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user_profile'] = self.request.user.profile
+
         return kwargs
 
 
@@ -117,6 +140,7 @@ class BookUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
                 raise PermissionDenied("You can only edit books you contributed to.")
         
         response = super().dispatch(request, *args, **kwargs)
+
         return response
 
     def get_success_url(self):
@@ -125,18 +149,41 @@ class BookUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
 class BookBorrowView(CreateView):
     model = Borrow
-    fields = ['name', 'date_borrowed']
     template_name = 'book_borrow.html'
+    fields = ['name', 'date_borrowed']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['book'] = get_object_or_404(Book, pk=self.kwargs['pk'])
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['date_borrowed'] = timezone.now().date()
+
+        return initial
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+
+        form.fields['date_borrowed'].widget = forms.DateInput(attrs={
+            'type':'date',
+            'class':'form-control',
+        })
+
         if self.request.user.is_authenticated:
             form.fields['name'].required = False
             form.fields['name'].widget = forms.HiddenInput()
+
         return form
 
     def form_valid(self, form):
         form.instance.book = get_object_or_404(Book, pk=self.kwargs['pk'])
+        book = get_object_or_404(Book, pk=self.kwargs['pk'])
+
+        if not book.available_to_borrow:
+            form.add_error(None, "This book cannot be borrowed. This book is only for reference.")
+            return self.form_invalid(form)
         
         if self.request.user.is_authenticated:
             form.instance.borrower = self.request.user.profile
@@ -151,3 +198,4 @@ class BookBorrowView(CreateView):
     
     def get_success_url(self):
         return reverse_lazy('bookclub:book_detail', kwargs={'pk':self.kwargs['pk']})
+    
