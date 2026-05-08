@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Commission, CommissionType
+from .models import Commission, CommissionType, Job, JobApplication
+
+
+
 
 
 @admin.register(CommissionType)
@@ -13,6 +16,7 @@ class CommissionTypeAdmin(admin.ModelAdmin):
 class CommissionAdmin(admin.ModelAdmin):
     list_display = (
         "title",
+        "maker",
         "type",
         "people_required",
         "created_on",
@@ -20,3 +24,15 @@ class CommissionAdmin(admin.ModelAdmin):
     )
     search_fields = ("title",)
     list_filter = ("created_on", "type",)
+
+@admin.register(Job)
+class JobAdmin(admin.ModelAdmin):
+    list_display = (
+        "role",
+        "commission",
+        "status",
+        "manpower_required",
+    )
+    list_filter = ("status",)
+
+
