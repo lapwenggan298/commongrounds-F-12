@@ -8,6 +8,7 @@ from .models import Profile, Role
 class ProfileInLine(admin.StackedInline):
     model = Profile
     can_delete = False
+    filter_horizontal = ('roles',)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -16,18 +17,15 @@ class UserAdmin(BaseUserAdmin):
 
 class RoleAdmin(admin.ModelAdmin):
     model = Role
-
-
-class RoleInLine(admin.TabularInline):
-    model = Role
+    list_display = ('name', 'display_name')
 
 
 class ProfileAdmin(admin.ModelAdmin):
     model = Profile
-    inlines = [RoleInLine]
-    list_display = ('user', 'display_name', 'role',)
-    list_filter = ('role',)
+    list_display = ('user', 'display_name', 'email_address',)
+    list_filter = ('roles',)
     search_fields = ('user__username', 'display_name',)
+    filter_horizontal = ('roles',)
 
 
 admin.site.unregister(User)

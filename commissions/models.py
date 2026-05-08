@@ -97,7 +97,7 @@ class JobApplication(models.Model):
     )
 
     applicant = models.ForeignKey(
-        "profiles.Profile",
+        "accounts.Profile",
         on_delete=models.CASCADE,
     )
 
