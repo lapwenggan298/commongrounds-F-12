@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
     <a href = "{% url 'home' %}">Back to Home Page</a>
@@ -6,7 +6,7 @@
     {% if user.is_authenticated %}
     <h2>{{ request.user.profile.display_name}}'s Dashboard</h2>
 
-    <a href = "{% url 'accounts:profile_update'}">Update Display Name?</a>
+    <a href = "{% url 'accounts:profile_update' %}">Update Display Name?</a>
   
     <h3>Products Sold</h3>
         <ul>
@@ -54,7 +54,8 @@
         </ul>
 
     {% else %}
-        <p>You are not logged in or do not have an account.</p>
+        <p>You are either not logged in or you do not have an account yet.</p>
         <a href = "{% url 'login' %}">Log In</a>
+        <p>Don't have an account yet? <a href="{% url 'accounts:user_registration' %}">Sign Up here!</a></p>
 
 {% endblock %}
