@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from accounts.views import HomeView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('merchstore/', include('merchstore.urls', namespace='merchstore')),
@@ -24,4 +26,7 @@ urlpatterns = [
     path('bookclub/', include('bookclub.urls', namespace='bookclub')),
     path('diyprojects/', include('diyprojects.urls', namespace='diyprojects')),
     path('commissions/', include('commissions.urls', namespace='commissions')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('', HomeView.as_view(), name='home'),
 ]

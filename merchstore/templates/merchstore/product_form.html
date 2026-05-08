@@ -1,0 +1,13 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% if object %}Edit product{% else %}Add a product{% endif %}</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if object %}Save changes{% else %}Create product{% endif %}</button>
+    </form>
+
+    <p><a href="{% url 'merchstore:product_list' %}">Cancel</a></p>
+{% endblock %}

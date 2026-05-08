@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{% if object %}Update{% else %}Create{% endif %} Event</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {% for field in form %}
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            
+            {% if field.help_text %}
+                <small style="color: gray;">{{ field.help_text }}</small>
+            {% endif %}
+            
+            {% for error in field.errors %}
+                <p style="color: red;">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">Save Event</button>
+    <a href="{% url 'localevents:event-list' %}">Cancel</a>
+</form>
+{% endblock %}
+

@@ -31,7 +31,7 @@ class Commission(models.Model):
     )
 
     maker = models.ForeignKey(
-        "profiles.Profile",
+        "accounts.Profile",
         on_delete=models.CASCADE,)
     title = models.CharField(max_length=255)
     description = models.TextField()

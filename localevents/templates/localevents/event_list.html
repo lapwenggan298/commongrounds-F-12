@@ -2,14 +2,49 @@
 
 {% block content %}
 <h1>Local Events</h1>
+
+<p><a href="{% url 'localevents:event-create' %}">Create New Event</a></p>
+
+{% if request.user.is_authenticated %}
+    
+   
+    <h3>Events You Organized</h3>
+    <ul>
+        {% for event in organized_events %}
+            <li>
+                <strong>{{ event.title }}</strong> - {{ event.location }}
+                <a href="{% url 'localevents:event-detail' event.pk %}">View Details</a>
+            </li>
+        {% empty %}
+            <li>You haven't organized any events yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Events You've Joined</h3>
+    <ul>
+        {% for event in signed_up_events %}
+            <li>
+                <strong>{{ event.title }}</strong> - {{ event.location }}
+                <a href="{% url 'localevents:event-detail' event.pk %}">View Details</a>
+            </li>
+        {% empty %}
+            <li>You haven't signed up for any events yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Other Events</h3>
+{% else %}
+    <h3>All Events</h3>
+{% endif %}
+
 <ul>
-    {% for event in events %}
+    {% for event in all_events %}
         <li>
             <strong>{{ event.title }}</strong> - {{ event.location }} <br>
             <a href="{% url 'localevents:event-detail' event.pk %}">View Details</a>
         </li>
     {% empty %}
-        <li>No events scheduled yet.</li>
+        <li>No other events scheduled yet.</li>
     {% endfor %}
 </ul>
 {% endblock %}
