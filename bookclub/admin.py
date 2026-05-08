@@ -9,6 +9,11 @@ class BookInLine(admin.TabularInline):
     model = Book
 
 
+class BookmarkInLine(admin.TabularInline):
+    model = Bookmark
+    extra = 0
+
+
 class BookReviewInLine(admin.TabularInline):
     model = BookReview
     extra = 1
@@ -58,7 +63,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 class BookAdmin(admin.ModelAdmin):
     model = Book
-    inlines = [BookReviewInLine, BorrowInLine,]
+    inlines = [BookReviewInLine, BookmarkInLine, BorrowInLine,]
     search_fields = [
         'title',
         'author',
