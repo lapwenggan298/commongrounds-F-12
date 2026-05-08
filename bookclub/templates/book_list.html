@@ -2,9 +2,67 @@
 
 	{% block content %}
 	<h1>Book List</h1>
+
+	{% if request.user.is_authenticated %}
+	<!--if user is contributor/authorized-->
+		{% if request.user.profile.role == "BOOK_CONTRIBUTOR" %}
+		<a href = "{% url 'bookclub:book_create' %}">Add/Create a New Book</a>
+		{% endif %}
+		
+		<h2>Your Contributions</h2>
+		{% if contributed %}
+			<ul>
+				{% for b in contributed %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>No contributions yet.</p>
+		{% endif %}
+		
+		<h2>Your Bookmarks</h2>
+		{% if bookmarked %}
+			<ul>
+				{% for b in bookmarked %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<li>No books bookmarked yet.</li>
+		{% endif %}
+
+		<h2>Books You Reviewed</h2>
+		{% if reviewed %}
+			<ul>
+				{% for b in reviewed %}
+				<li>
+					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>No reviewed books yet.</p>
+		{% endif %}
 	
+		<h2>All Other Books</h2>
+			<ul>
+				{% for book in all_books %}
+				<li>
+					<a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+				</li>
+				{% empty %}
+					<p>Seems like there's no other books in our list.</p>
+				{% endfor %}
+			</ul>
+				
+	{% else %}
+	<!--if user is not a contributor/authorized-->
 	<ul>
-		{% for book in book_list %}
+		{% for book in all_books %}
 			<li>
 				<a href = "{{ book.get_absolute_url }}"> 
 					{{book.title}} 
@@ -15,4 +73,7 @@
 		{% endfor %}
 	</ul>
 
+	<br>
+
+	{% endif %}
 {% endblock %}

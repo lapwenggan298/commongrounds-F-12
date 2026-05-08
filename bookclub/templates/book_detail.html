@@ -8,11 +8,57 @@
 	
 	<h2> {{ book.title }}</h2>
 	<p>Author: {{ book.author }}</p>
-	<p>Genre: {{ book.book_category.name }} </p>
+	<p>Genre: {{ book.genre.name }} </p>
 	<p>Published on the year of: {{ book.publication_year }}</p>
+	<p>Synopsis: {{ book.synopsis }}</p>
+	<p>Bookmarks: {{ bookmark_count }} </p>
 	
 	<br>
 	<p>Book added to our list on: {{ book.created_on }}</p>
 	<p>Book on our list updated on: {{book.updated_on}} </p>
+
+	<br>
+	<p>Available to Borrow? </p>
+	<p>{% if is_available %} Available {% else %} Unavailable {% endif %}</p>
+
+	{% if request.user.is_authenticated %}
+	<br>
+	<form method="POST">
+		{% csrf_token %}
+		<button type="submit" name="toggle_bookmark">
+			{% if is_bookmarked %}
+				Remove Bookmark
+			{% else %}
+				Bookmark
+			{% endif %}
+		</button>
+	</form>
+	{% endif %}
+
+	<!--Conditional if user is contributor-->	
+	{% if request.user.is_authenticated and request.user.profile == book.contributor %}
+	<br>
+		<a href = "{% url 'bookclub:book_edit' book.pk %}"> Edit Book Detail(s) </a>
+	{% endif %}
+
+	{% if is_available %}
+	<br>
+		<a href = "{% url 'bookclub:book_borrow' book.pk %}"> Borrow Book </a>
+	{% endif %}
+	
+	<hr>
+	<h3>Reviews</h3>
+		{% for r in book.reviews.all %}
+			<p><strong>{{ r.user_review.display_name|default:r.anon_reviewer }}</strong>: {{ r.comment }}</p>
+		{% empty %}
+			<p>No reviews yet.</p>
+		{% endfor %}
+
+	<h4>Leave a Review!</h4>
+		<form method="POST">
+			{% csrf_token %}
+			{{ review_form.as_p }}
+			<button>Submit Review</button>
+		</form>
 
 {% endblock %}

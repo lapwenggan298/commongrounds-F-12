@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+	{% block content %}
+	<h2>Updating/Editing: {{book.title}}</h2>
+
+	<form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    
+        <button type="submit">Update/Save Book</button>
+    </form>
+
+    <a href="{% url 'bookclub:book_detail' book.pk %}">Cancel and Go Back to Book Details</a>
+	
+{% endblock %}

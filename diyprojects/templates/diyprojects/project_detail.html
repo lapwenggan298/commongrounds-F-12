@@ -4,6 +4,41 @@
 {% block content %}
     <h1>{{ project.title }}</h1>
     <p><i>Project type: {{ project.category.name }}</i></p>
+    <p><i>Score: {{ average_score }} | Favorites: {{ favorite_count}} </i></p>
+
+    {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'diyprojects:add_rating' project.pk %}">
+            {% csrf_token %}
+
+            <select name="score">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+
+            <button type="submit">
+                Submit Rating
+            </button>
+        
+        </form>
+    {% endif %}
+    
+    <form method="post" action="{% url 'diyprojects:add_favorite' project.pk %}">
+        {% csrf_token %}
+
+        {% if is_favorited %}
+            <button type="submit">Unfavorite</button>
+        {% else %}
+            <button type="submit">Favorite</button>
+        {% endif %}
+    </form>
 
     <p>{{ project.description }}</p>
 
@@ -19,4 +54,30 @@
 
     <p>Project created on: {{ project.created_on }}</p>
     <p>Project updated on: {{ project.updated_on }}</p>
+
+    {% if is_creator and project.creator == request.user.profile %}
+        <p><a href="{% url 'diyprojects:edit_project' project.pk %}">Edit Project</a></p>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+        <h2>Write A Review</h2>
+        <form method="post" action="{% url 'diyprojects:add_review' project.pk %}">
+            {% csrf_token %}
+
+            <textarea name="text" rows="4" cols="40" placeholder="Write your review..."></textarea>
+
+            <br><button type="submit">Submit Review</button>
+        </form>
+    {% endif %}
+
+    <h2>Reviews</h2>
+
+        {% for review in project.projectreview_set.all %}
+            <p>
+                <b>{{ review.reviewer.display_name }}</b><br>
+                {{ review.comment }}
+            </p>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
 {% endblock %}
