@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.urls import reverse
 
 
 class ProjectCategory(models.Model):
@@ -36,13 +37,18 @@ class Project(models.Model):
     class Meta:
         ordering = ["-created_on"]
 
+
+    def get_absolute_url(self):
+        return reverse("diyprojects:project_detail", args=[str(self.pk)])
+
     def __str__(self) -> str:
         return self.title
     
 class Favorite(models.Model):
     project = models.ForeignKey(
         "Project",
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
+        related_name="favorited_projects" 
     )
     profile = models.ForeignKey(
         "accounts.Profile",
@@ -54,19 +60,22 @@ class Favorite(models.Model):
         ('To-Do', 'To-Do'),
         ('Done', 'Done'),
     ]
-    project_status = models.CharField(choices=status_choices,default='Backlog')
+    project_status = models.CharField(choices=status_choices,default='To-Do')
 
 class ProjectReview(models.Model):
     project = models.ForeignKey(
         "Project",
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
+        related_name="project_reviews", 
     )
     reviewer = models.ForeignKey(
         "accounts.Profile",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     comment = models.TextField()
-    image = models.ImageField(null=True)
+    image = models.ImageField(null=True, blank=True)
 
 class ProjectRating(models.Model):
     project = models.ForeignKey(

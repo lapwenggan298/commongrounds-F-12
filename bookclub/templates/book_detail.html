@@ -33,7 +33,7 @@
 	</form>
 	{% endif %}
 	
-	{% if request.user.is_authenticated and is_contributor %}
+	{% if request.user.is_authenticated and is_contributor and book.contributor == request.user.profile %}
 	<br>
 		<a href = "{% url 'bookclub:book_edit' book.pk %}"> Edit Book Detail(s) </a>
 	{% endif %}
@@ -49,6 +49,7 @@
 	<hr>
 	<h3>Reviews</h3>
 		{% for r in book.reviews.all %}
+		<p><em><strong>{{ r.title }}</strong></em></p>
 			<p><strong>{{ r.user_review.display_name|default:r.anon_reviewer }}</strong>: {{ r.comment }}</p>
 		{% empty %}
 			<p>No reviews yet.</p>
