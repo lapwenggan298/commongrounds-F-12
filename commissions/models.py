@@ -1,6 +1,5 @@
 from django.db import models
-from django.db.models import Case, When, IntegerField
-from django.contrib.auth.models import User
+from django.db.models import Sum, Case, When, IntegerField
 
 
 class CommissionType(models.Model):
@@ -22,31 +21,55 @@ class Commission(models.Model):
         ("DISCONTINUED", "Discontinued"),
     ]
     
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
     type = models.ForeignKey(
         "CommissionType",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
         related_name="commissions",
     )
 
     maker = models.ForeignKey(
         "accounts.Profile",
-        on_delete=models.CASCADE,)
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    people_required = models.PositiveIntegerField()
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
+        on_delete=models.CASCADE,
+        related_name="commissions"
+        )
 
+    people_required = models.PositiveIntegerField()
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="OPEN",
     )
 
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["created_on"]
+
+
+    @property
+    def total_manpower_required(self):
+        return self.jobs.aggregate(total=Sum('manpower_required'))['total'] or 0
+    
+    @property
+    def open_manpower(self):
+        accepted_apps = JobApplication.objects.filter(job__commission=self, status="ACCEPTED").count()
+        return self.total_manpower_required - accepted_apps
+    
+    def update_status(self):
+        jobs = self.jobs.all()
+        if jobs.exists() and all(job.status == "FULL" for job in jobs):
+            if self.status != "FULL":
+                self.status = "FULL"
+                self.save()
+    
     def __str__(self) -> str:
         return self.title
+
     
 class Job(models.Model):
     STATUS_CHOICES = [
@@ -69,15 +92,32 @@ class Job(models.Model):
         default="OPEN",
     )
 
-    def update_status_if_full(self):
-        accepted_count = self.applications.filter(status="ACCEPTED").count()
-
-        if accepted_count >= self.manpower_required:
-            self.status = "FULL"
-            self.save(update_fields=["status"])
-
     class Meta:
-        ordering = ["-status", "-manpower_required", "role"]
+        ordering = [
+            Case(
+                When(status = "OPEN", then=0),
+                When(status = "FULL", then=1),
+                output_field=IntegerField()
+            ),
+            "-manpower_required",
+            "role"
+        ]
+    
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.commission.update_status()
+    
+    def update_job_status(self):
+        accepted = self.applications.filter(status="ACCEPTED").count()
+        if accepted >= self.manpower_required:
+            if self.status != "FULL":
+                self.status = "FULL"
+                self.save()
+
+    def is_full(self):
+        accepted = self.applications.filter(status="ACCEPTED").count()
+        return accepted >= self.manpower_required        
 
     def __str__(self):
         return self.role
@@ -109,16 +149,6 @@ class JobApplication(models.Model):
 
     applied_on = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-
-        super().save(*args, **kwargs)
-
-        if self.status == "ACCEPTED":
-            job = self.job
-
-            job.update_status_if_full()
-
     class Meta:
         ordering = [
         Case(
@@ -129,4 +159,8 @@ class JobApplication(models.Model):
         ),
         "-applied_on",
         ]
-        
+
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.job.update_job_status()
