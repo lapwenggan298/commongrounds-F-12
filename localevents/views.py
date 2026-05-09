@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
+from .forms import EventCreateForm
 from .models import Event, EventSignup
 
 class EventListView(ListView):
@@ -29,12 +30,13 @@ class EventDetailView(DetailView):
 
 class EventCreateView(LoginRequiredMixin, CreateView):
     model = Event
-    fields = ['title', 'category', 'event_image', 'description', 'location', 'start_time', 'end_time', 'event_capacity', 'status']
+    form_class = EventCreateForm
     template_name = 'localevents/event_form.html'
-
+    
     def form_valid(self, form):
         response = super().form_valid(form)
-        form.instance.organizer.add(self.request.user.profile)
+        event = form.save()
+        event.organizer.add(self.request.user.profile)
         return response
 
 class EventUpdateView(LoginRequiredMixin, UpdateView):
@@ -44,11 +46,18 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         event = form.save(commit=False)
-        signup_count = event.eventsignup_set.count()
-        if signup_count >= event.event_capacity:
-            event.status = 'Full'
+
+        selected_status = form.cleaned_data.get('status')
+
+        if selected_status not in ['Cancelled', 'Done']:
+            signup_count = event.eventsignup_set.count()
+            if signup_count >= event.event_capacity:
+                event.status = 'Full'
+            else:
+                event.status = 'Available'
         else:
-            event.status = 'Available'
+            event.status = selected_status
+
         return super().form_valid(form)
 
 def event_signup(request, pk):

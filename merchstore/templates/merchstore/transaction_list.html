@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+﻿{% extends 'base_2.html' %}
 
 {% block content %}
     <h1>Transaction List</h1>
@@ -11,8 +11,8 @@
                     {% for transaction in transactions %}
                         <li>
                             <a href="{% url 'merchstore:product_detail' transaction.product.pk %}">{{ transaction.product.name }}</a>
-                            — Qty: {{ transaction.amount }}
-                            — Status: {{ transaction.get_status_display }}
+                            - Qty: {{ transaction.amount }}
+                            - Status: {{ transaction.get_status_display }}
                         </li>
                     {% endfor %}
                 </ul>

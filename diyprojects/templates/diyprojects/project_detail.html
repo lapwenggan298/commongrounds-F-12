@@ -56,8 +56,11 @@
     <p>Project updated on: {{ project.updated_on }}</p>
 
     {% if is_creator and project.creator == request.user.profile %}
+    <br>
         <p><a href="{% url 'diyprojects:edit_project' project.pk %}">Edit Project</a></p>
     {% endif %}
+
+    <br><a href = "{% url 'diyprojects:project_list' %}">Back to Projects List</a>
 
     {% if request.user.is_authenticated %}
         <h2>Write A Review</h2>

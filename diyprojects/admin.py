@@ -2,13 +2,30 @@ from django.contrib import admin
 from .models import Project, ProjectCategory, Favorite, ProjectReview, ProjectRating
 
 
-class ProjectInline(admin.TabularInline):
+class ProjectInline(admin.StackedInline):
     model = Project
+    extra = 1
+    fields = ("title", "creator", "description",)
+
+
+class ProjectReviewInLine(admin.StackedInline):
+    model = ProjectReview
+    extra = 0
+
+
+class ProjectRatingInLine(admin.TabularInline):
+    model = ProjectRating
+    extra = 0
+
+
+class FavoriteInLine(admin.TabularInline):
+    model = Favorite
+    extra = 0
 
 
 class ProjectCategoryAdmin(admin.ModelAdmin):
     model = ProjectCategory
-    inline = [ProjectInline]
+    inlines = [ProjectInline]
     list_display = ("name", "description", )
     ordering = ("name", )
     search_fields = ("name", )
@@ -16,12 +33,11 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 
 class ProjectAdmin(admin.ModelAdmin):
     model = Project
+    inlines = [ProjectReviewInLine, ProjectRatingInLine, FavoriteInLine]
     list_display = (
         "title", 
         "category", 
         "description", 
-        "materials", 
-        "steps", 
         "created_on", 
         "updated_on", 
     )
@@ -31,7 +47,6 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class FavoriteAdmin(admin.ModelAdmin):
     model = Favorite
-    inline = [ProjectInline]
     list_display = (
         "project", 
         "profile", 
@@ -43,7 +58,6 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 class ProjectReviewAdmin(admin.ModelAdmin):
     model = ProjectReview
-    inline = [ProjectInline]
     list_display = (
         "project", 
         "reviewer", 
@@ -54,7 +68,6 @@ class ProjectReviewAdmin(admin.ModelAdmin):
 
 class ProjectRatingAdmin(admin.ModelAdmin):
     model = ProjectRating
-    inline = [ProjectInline]
     list_display = (
         "project", 
         "profile", 

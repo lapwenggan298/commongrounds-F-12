@@ -2,8 +2,6 @@
 
 	{% block content %}
 
-	<a href = "{% url 'bookclub:book_list' %}">Back to List of Books</a>
-
 	<h1> Book Detail</h1>
 	
 	<h2> {{ book.title }}</h2>
@@ -34,9 +32,8 @@
 		</button>
 	</form>
 	{% endif %}
-
-	<!--Conditional if user is contributor-->	
-	{% if request.user.is_authenticated and request.user.profile == book.contributor %}
+	
+	{% if request.user.is_authenticated and is_contributor and book.contributor == request.user.profile %}
 	<br>
 		<a href = "{% url 'bookclub:book_edit' book.pk %}"> Edit Book Detail(s) </a>
 	{% endif %}
@@ -45,10 +42,14 @@
 	<br>
 		<a href = "{% url 'bookclub:book_borrow' book.pk %}"> Borrow Book </a>
 	{% endif %}
+
+	<br>
+	<a href = "{% url 'bookclub:book_list' %}">Back to List of Books</a>
 	
 	<hr>
 	<h3>Reviews</h3>
 		{% for r in book.reviews.all %}
+		<p><em><strong>{{ r.title }}</strong></em></p>
 			<p><strong>{{ r.user_review.display_name|default:r.anon_reviewer }}</strong>: {{ r.comment }}</p>
 		{% empty %}
 			<p>No reviews yet.</p>

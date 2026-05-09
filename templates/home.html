@@ -1,21 +1,21 @@
-{% extends "base.html" %}
+{% extends 'base_2.html' %}
 
 {% block content %}
   <h1>Commongrounds Project</h1>
 
   {% if request.user.is_authenticated %}
-			Hello, {{ request.user }}
-			    <form method="POST" action=" {% url 'logout' %} ">
+		Hello, {{ request.user }}
+			  <form method="POST" action=" {% url 'logout' %} ">
 					{% csrf_token %}
 					<button type = "submit">Logout</button>
 				</form>
+    <ul>
+      <li><a href="{% url 'accounts:profile_dashboard' %}">My Profile Dashboard</a></li>
+    </ul>
 		{% else %}
 			<a href = "{% url 'login' %}">Login</a>
+      <p>Don't have an account yet? <a href="{% url 'accounts:user_registration' %}">Sign Up here!</a></p>
 	{% endif %}
-
-  <ul>
-    <li><a href="{% url 'accounts:profile_dashboard' %}">My Profile Dashboard</a></li>
-  </ul>
   
   <p>Apps:</p>
   <ul>

@@ -10,8 +10,9 @@ def role_required(required_role):
             if not request.user.is_authenticated:
                 return redirect(f"{settings.LOGIN_URL}?next={request.path}")
             
-            if hasattr(request.user, 'profile') and request.user.profile.role == required_role:
-                return view_func(request, *args, **kwargs)
+            if hasattr(request.user, 'profile'): 
+                if request.user.profile.roles.filter(name=required_role).exists():
+                    return view_func(request, *args, **kwargs)
             
             raise PermissionDenied
             

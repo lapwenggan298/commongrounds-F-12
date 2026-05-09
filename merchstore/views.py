@@ -54,12 +54,21 @@ class ProductListView(ListView):
 
         if user.is_authenticated and hasattr(user, "profile"):
             profile = user.profile
+            context['is_market_seller'] = profile.roles.filter(name="MARKET_SELLER")
+
             my_products = queryset.filter(owner=profile)
             other_products = queryset.exclude(pk__in=my_products.values_list("pk", flat=True))
+
             context["my_products"] = my_products
             context["products"] = other_products
+
+            context['has_cart_items'] = Transaction.objects.filter(
+                buyer=self.request.user.profile,
+                status="ON_CART",
+            ).exists()
         else:
             context["products"] = queryset
+            context['has_cart_items'] = False
 
         return context
 
@@ -72,28 +81,40 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = kwargs.get("form", TransactionForm())
+        product = self.get_object()
+
+        if self.request.user.is_authenticated:
+            profile = self.request.user.profile
+            context['is_product_owner'] = (product.owner == profile)
+            context['is_market_seller'] = self.request.user.profile.roles.filter(name="MARKET_SELLER").exists()
+            context['has_cart_items'] = Transaction.objects.filter(
+                buyer=self.request.user.profile,
+                status="ON_CART",
+            ).exists()
+        else:
+            context['is_product_owner'] = False
+            context['is_market_seller'] = False
+            context['has_cart_items'] = False
+
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        form = TransactionForm(request.POST)
+
         if not request.user.is_authenticated:
             return redirect(f"{reverse('login')}?next={request.path}")
 
-        if not hasattr(request.user, "profile"):
-            return redirect('login')
+        profile = getattr(request.user, 'profile', None)
 
-        profile = request.user.profile
-        if self.object.owner_id == profile.id:
-            form = TransactionForm(request.POST)
+        if profile and self.object.owner == profile:
             form.add_error(None, "You cannot purchase your own product.")
             return self.render_to_response(self.get_context_data(form=form))
 
         if self.object.stock == 0:
-            form = TransactionForm(request.POST)
             form.add_error(None, "This product is out of stock.")
             return self.render_to_response(self.get_context_data(form=form))
 
-        form = TransactionForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data["amount"]
             if amount > self.object.stock:
@@ -101,13 +122,15 @@ class ProductDetailView(DetailView):
                 return self.render_to_response(self.get_context_data(form=form))
 
             transaction = form.save(commit=False)
-            transaction.buyer = profile
             transaction.product = self.object
+            
+            transaction.buyer = profile
             transaction.save()
 
             self.object.stock -= amount
             self.object.update_status_from_stock()
             self.object.save(update_fields=["stock", "status"])
+            
             return redirect("merchstore:cart")
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -155,7 +178,6 @@ class ProductUpdateView(RoleRequiredMixin, UpdateView):
         return reverse_lazy("merchstore:product_detail", kwargs={"pk": self.object.pk})
 
 
-
 class CartView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = "merchstore/cart.html"
@@ -163,7 +185,7 @@ class CartView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         profile = self.request.user.profile
-        return Transaction.objects.select_related("product__owner", "product").filter(buyer=profile)
+        return Transaction.objects.select_related("product__owner", "product").filter(buyer=profile, status="ON_CART")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

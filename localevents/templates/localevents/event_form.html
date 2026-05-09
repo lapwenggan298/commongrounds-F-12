@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_2.html' %}
 
 {% block content %}
 <h2>{% if object %}Update{% else %}Create{% endif %} Event</h2>
@@ -22,6 +22,8 @@
     {% endfor %}
 
     <button type="submit">Save Event</button>
+    
+    <br>
     <a href="{% url 'localevents:event-list' %}">Cancel</a>
 </form>
 {% endblock %}

@@ -2,8 +2,15 @@
 from .models import Product, ProductType, Transaction
 
 # Register your models here.
+
+class ProductInLine(admin.TabularInline):
+    model = Product
+    extra = 0
+
+
 @admin.register(ProductType)
 class ProductTypeAdmin(admin.ModelAdmin):
+    inlines = [ProductInLine]
     list_display = ("name",)
     ordering = ("name",)
     search_fields = ("name",)

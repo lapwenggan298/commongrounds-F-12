@@ -1,22 +1,36 @@
-{% extends 'base.html' %}
+{% extends 'base_2.html' %}
 
 {% block content %}
 
-<h2>Create Commission</h2>
+<h2>{% if object %}Edit{% else %}Create{% endif %} Commission</h2>
 
 <form method="post">
     {% csrf_token %}
 
-    <input type="text" name="title" placeholder="Title">
-    <textarea name="description"></textarea>
+    <div class="commission-section">
+        <h3>Commission Details</h3>
+        {{ form.title }}
+        {{ form.description }}
+        {{ form.type }}
+        {{ form.people_required }}
+        {{ form.status }}
+    </div>
 
-    <input type="number" name="people_required">
+    <hr>
 
-    <h3>Job</h3>
-    <input type="text" name="role" placeholder="Role">
-    <input type="number" name="manpower_required">
+    {%if not object %}
+    <div class="job-section">
+        <h3>Primary Job Role</h3>
+        {{ form.role }}
+        {{ form.manpower_required}}
+    </div>
+    {% endif %}
 
-    <button type="submit">Create</button>
+    <button type="submit">{%if object %} Confirm Edit On Commission{% else %} Create Commission and Job{% endif %} </button>
+
 </form>
+
+<br>
+<a href="{% url 'commissions:commission_list' %}">Cancel and Go Back to Commissions List</a>
 
 {% endblock %}

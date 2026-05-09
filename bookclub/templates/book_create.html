@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_2.html' %}
 
 	{% block content %}
 	<h1>Book Creation - Contribute!</h1>
@@ -10,6 +10,7 @@
         <button type="submit">Create Book</button>
     </form>
 	
+    <br>
 	<a href="{% url 'bookclub:book_list' %}">Cancel and Go Back to Book List</a>
 
 {% endblock %}

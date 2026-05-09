@@ -2,45 +2,55 @@
 
 {% block content %}
     <h1>{{ commission.title }}</h1>
-
     <p>{{ commission.description }}</p>
 
     <p><strong>Type:</strong>
         {% if commission.type %}
             {{ commission.type.name }}
+        {% else %} N/A
         {% endif %}
     </p>
 
-    <p><strong>Total Manpower:</strong> {{ summary.total_manpower }}</p>
-    <p><strong>Open Manpower:</strong> {{ summary.open_manpower }}</p>
+    <p><strong>Total Manpower:</strong> {{ commission.total_manpower_required }}</p>
+    <p><strong>Open Manpower:</strong> {{ commission.open_manpower }}</p>
     <p><strong>People Required:</strong> {{ commission.people_required }}</p>
-    <p><strong>Created On:</strong> {{ commission.created_on }}</p>
-    <p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
+
+    <p><strong>Status:</strong> {{ commission.status }}</p>
+ 
+    <p><strong>Created On:</strong> {{ commission.created_on|date:"F d, Y" }}</p>
+    <p><strong>Last Updated:</strong> {{ commission.updated_on|date:"F d, Y" }}</p>
+
 
     {% if user.is_authenticated and commission.maker == user.profile %}
-    <a href="{% url 'commissions:commission_update' commission.pk %}">
-        Edit Commission
-    </a>
-{% endif %}
+        <a href="{% url 'commissions:commission_update' commission.pk %}"> Edit Commission</a>
+    {% endif %}
 
-   <h2>Jobs</h2>
+    <hr>
+    <h2>Jobs</h2>
 
     {% for job in commission.jobs.all %}
-        <div>
+        <div class="job-card">
             <h3>{{ job.role }}</h3>
-            <p>Status: {{ job.status }}</p>
+            <p><strong>Manpower Needed:</strong> {{ job.manpower_required }}</p>
+            <p><strong>Status:</strong> {{ job.status }}</p>
 
-            {% if user.is_authenticated and job.status == "OPEN" %}
-                <form method="post" action="{% url 'commissions:apply_to_job' job.pk %}">
-                    {% csrf_token %}
-                    <button type="submit">Apply to Job</button>
-                </form>
+            {% if user.is_authenticated %} 
+                {% if job.status == "OPEN" or job.status == "Open" %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="job_id" value="{{ job.id }}">
+                        <button type="submit">Apply to Job</button>
+                    </form>
+                {% else %}
+                    <button disabled>Apply to Job (Full)</button>
+                {% endif %}
+            
             {% else %}
-                <button disabled>Full</button>
+                    <p><a href="{% url 'login' %}">Log in</a> to apply for this job.</p>
             {% endif %}
         </div>
     {% empty %}
-        <p>No jobs available.</p>
+        <p>No jobs available for this commission.</p>
     {% endfor %}
 
 <br>

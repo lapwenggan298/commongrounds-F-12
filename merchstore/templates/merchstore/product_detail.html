@@ -16,18 +16,32 @@
 
     <p><a href="{% url 'merchstore:product_list' %}">Back to products</a></p>
 
-    {% if request.user.is_authenticated and request.user.profile == product.owner %}
+    {% if request.user.is_authenticated and is_product_owner %}
         <p><a href="{% url 'merchstore:product_update' product.pk %}">Edit product</a></p>
+        <p><a href="{% url 'merchstore:transaction_list' %}">View My Sales/Transactions</a></p>
     {% endif %}
 
-    {% if product.stock > 0 and not (request.user.is_authenticated and request.user.profile == product.owner) %}
-        <h2>Buy this product</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Add to cart</button>
-        </form>
+    {% if product.stock > 0 %}
+        {% if not request.user.is_authenticated or is_market_seller %}
+            <h2>Buy this product</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Add to cart</button>
+            </form>
+            {% endif %}
     {% elif product.stock == 0 %}
         <button type="button" disabled>Out of stock</button>
     {% endif %}
+
+    {% if request.user.is_authenticated %}
+        {% if has_cart_items %}
+            <a href="{% url 'merchstore:cart' %}">View Cart</a>
+        {% else %}
+            <p> Your Cart is Empty.</p>
+        {% endif %}
+    {% else %}
+        <p><small><a href="{% url 'login' %}">Log in</a> to view your saved cart items or to add items.</small></p>
+    {% endif %}
+
 {% endblock %}

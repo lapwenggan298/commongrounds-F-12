@@ -1,17 +1,16 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <a href = "{% url 'home' %}">Back to Home Page</a>
 
     {% if user.is_authenticated %}
     <h2>{{ request.user.profile.display_name}}'s Dashboard</h2>
 
-    <a href = "{% url 'accounts:profile_update'}">Update Display Name?</a>
+    <a href = "{% url 'accounts:profile_update' username=request.user.username %}">Update Display Name?</a>
   
     <h3>Products Sold</h3>
         <ul>
             {% for product in products %}
-            <li>{{ product.name }} - ${{ product.price }}</li>
+            <li><a href = "{% url 'merchstore:product_detail' product.pk %}">{{ product.name }} </a> - ₱{{ product.price }}</li>
             {% empty %}
             <li>You haven't listed any products yet.</li>
             {% endfor %}
@@ -20,7 +19,7 @@
     <h3>Events Organized</h3>
         <ul>
             {% for event in events %}
-            <li>{{ event.title }} on {{ event.date }}</li>
+            <li><a href = "{% url 'localevents:event-detail' event.pk %}">{{ event.title }} on {{ event.start_time }} in {{ event.location }}</a></li>
             {% empty %}
             <li>You haven't organized any events yet.</li>
             {% endfor %}
@@ -29,7 +28,7 @@
     <h3>Books Contributed</h3>
         <ul>
             {% for book in books %}
-            <li>{{ book.title }}</li>
+            <li><a href = "{% url 'bookclub:book_detail' book.pk %}">{{ book.title }}</a></li>
             {% empty %}
             <li>No book contributions yet.</li>
             {% endfor %}
@@ -38,7 +37,7 @@
     <h3>Projects</h3>
         <ul>
             {% for project in projects %}
-            <li>{{ project.title }}</li>
+            <li><a href = "{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }} </a></li>
             {% empty %}
             <li>No projects created yet.</li>
             {% endfor %}
@@ -47,14 +46,15 @@
     <h3>Commissions</h3>
         <ul>
             {% for commission in commissions %}
-            <li>{{ commission.title }}</li>
+            <li><a href = "{% url 'commissions:commission_detail' commission.pk %}">{{ commission.title }}</a></li>
             {% empty %}
             <li>No commissions created yet.</li>
             {% endfor %}
         </ul>
 
     {% else %}
-        <p>You are not logged in or do not have an account.</p>
+        <p>You are either not logged in or you do not have an account yet.</p>
         <a href = "{% url 'login' %}">Log In</a>
-
+        <p>Don't have an account yet? <a href="{% url 'accounts:user_registration' %}">Sign Up here!</a></p>
+    {% endif %}
 {% endblock %}

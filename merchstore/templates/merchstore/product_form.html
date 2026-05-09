@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+﻿{% extends 'base_2.html' %}
 
 {% block content %}
     <h1>{% if object %}Edit product{% else %}Add a product{% endif %}</h1>
@@ -9,5 +9,6 @@
         <button type="submit">{% if object %}Save changes{% else %}Create product{% endif %}</button>
     </form>
 
+    <br>
     <p><a href="{% url 'merchstore:product_list' %}">Cancel</a></p>
 {% endblock %}

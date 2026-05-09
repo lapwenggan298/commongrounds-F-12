@@ -21,9 +21,9 @@
 
     <h1>Projects You Favorited</h1>
     <ul>
-        {% for favorite in favorites %}
+        {% for f in favorites %}
             <li>
-                <a href="{% url 'diyprojects:project_detail' favorite.project.pk %}">{{ favorite.project.title }}({{ favorite.project_status }})</a>
+                <a href="{{ f.project.get_absolute_url }}">{{ f.project.title }} (Status: {{ f.project_status }})</a>
             </li>
         {% empty %}
             <li>No projects favorited yet~</li>
@@ -32,20 +32,27 @@
 
     <h1>Projects You Reviewed</h1>
     <ul>
-        {% for review in reviews %}
+        {% for r in reviews %}
             <li>
-                <a href="{% url 'diyprojects:project_detail' review.project.pk %}">{{ review.project.title }}</a>
+                <a href="{{ r.get_absolute_url }}">{{ r.title }}</a>
             </li>
         {% empty %}
             <li>No projects reviewed yet~</li>
         {% endfor %}
     </ul>
 
-    <h1>Other Projects</h1>
+    <h1>Other DIY Projects</h1>
+        <ul>
+        {% for project in all_projects %}
+            <li>
+                <a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a>
+            </li>
+        {% empty %}
+            <li>No projects just yet~</li>
+        {% endfor %}
+    </ul>
 {% else %}
     <h1>DIY Projects</h1>
-{% endif %}
-
     <ul>
         {% for project in all_projects %}
             <li>
@@ -55,4 +62,5 @@
             <li>No projects just yet~</li>
         {% endfor %}
     </ul>
+{% endif %}
 {% endblock %}

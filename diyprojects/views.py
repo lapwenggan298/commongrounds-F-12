@@ -65,34 +65,26 @@ def add_review(request, pk):
 class ProjectListView(ListView):
     model = Project
     template_name = "diyprojects/project_list.html"
-    context_object_name = "projects"
+    context_object_name = "all_projects"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
 
-            context['is_creator'] = (profile.role == "PROJECT_CREATOR")
+            context['is_creator'] = profile.roles.filter(name="PROJECT_CREATOR").exists()
             
             created = Project.objects.filter(creator=profile)
-            favorited = Favorite.objects.filter(profile=profile)
-            reviewed = ProjectReview.objects.filter(reviewer=profile)
-
-            created_ids = created.values_list("id", flat=True)
-            favorited_ids = favorited.values_list("project_id", flat=True)
-            reviewed_ids = reviewed.values_list("project_id", flat=True)
+            favorited = Favorite.objects.filter(profile=profile).select_related('project')
+            reviewed = Project.objects.filter(project_reviews__reviewer=profile).distinct()
             
             context['created_projects'] = created
             context['favorites'] = favorited
             context['reviews'] = reviewed
-            
-            context['all_projects'] = Project.objects.exclude(
-                    id__in=created_ids
-                ).exclude(
-                    id__in=favorited_ids
-                ).exclude(
-                    id__in=reviewed_ids
-                )      
+        
+            exclude_ids =list(created.values_list('id', flat=True)) + list(favorited.values_list('id', flat=True)) + list(reviewed.values_list('id', flat=True))
+
+            context['all_projects'] = Project.objects.exclude(id__in=exclude_ids)
         return context
 
 
@@ -120,7 +112,7 @@ class ProjectDetailView(DetailView):
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
 
-            is_creator = (profile.role == "PROJECT_CREATOR")
+            is_creator = profile.roles.filter(name="PROJECT_CREATOR").exists()
 
             is_favorited = Favorite.objects.filter(
                 profile=profile,
@@ -143,10 +135,8 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     def test_func(self):
-        return (
-            hasattr(self.request.user, "profile") and
-            self.request.user.profile.role == "PROJECT_CREATOR"
-        )
+        return self.request.user.profile.roles.filter(name="PROJECT_CREATOR").exists()
+
     
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     model = Project
@@ -157,7 +147,4 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("diyprojects:project_detail", kwargs={"pk": self.object.pk})
     
     def test_func(self):
-        return (
-            hasattr(self.request.user, "profile") and
-            self.request.user.profile.role == "PROJECT_CREATOR"
-        )
+        return self.request.user.profile.roles.filter(name="PROJECT_CREATOR").exists()

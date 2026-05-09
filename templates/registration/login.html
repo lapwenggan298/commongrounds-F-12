@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_2.html' %}
 
 {% block content %}
     <form method="POST">
@@ -8,4 +8,7 @@
     </form>
     
     <a href = "{% url 'password_reset' %}">Forgot Password?</a>
+
+    <p>Don't have an account yet? <a href="{% url 'accounts:user_registration' %}">Sign Up here!</a></p>
+
 {% endblock %}
