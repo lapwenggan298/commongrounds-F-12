@@ -16,9 +16,9 @@
 					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
 				</li>
 				{% endfor %}
-			</ul>
 		{% else %}
-			<ul><p>No contributions yet.</p></ul>
+			<li><p>No contributions yet.</p></li>
+			</ul>
 		{% endif %}
 		
 		<h2>Your Bookmarks</h2>
@@ -29,9 +29,9 @@
 					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
 				</li>
 				{% endfor %}
-			</ul>
 		{% else %}
-			<ul><p>No books bookmarked yet. </p></ul>
+			<li><p>No books bookmarked yet.</p></li>
+			</ul>
 		{% endif %}
 
 		<h2>Books You Reviewed</h2>
@@ -42,9 +42,9 @@
 					<a href="{{ b.get_absolute_url }}">{{ b.title }}</a>
 				</li>
 				{% endfor %}
-			</ul>
 		{% else %}
-			<ul><p>No reviewed books yet.</p></ul>
+			<li><p>No reviewed books yet.</p></li>
+			</ul>
 		{% endif %}
 	
 		<h2>All Other Books</h2>
@@ -54,7 +54,7 @@
 					<a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
 				</li>
 				{% empty %}
-					<p>Seems like there's no other books in our list.</p>
+				 <li><p>Seems like there's no other books in our list.</p></li>
 				{% endfor %}
 			</ul>
 				

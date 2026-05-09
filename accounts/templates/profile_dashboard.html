@@ -10,7 +10,7 @@
     <h3>Products Sold</h3>
         <ul>
             {% for product in products %}
-            <li>{{ product.name }} - ${{ product.price }}</li>
+            <li>{{ product.name }} - ₱{{ product.price }}</li>
             {% empty %}
             <li>You haven't listed any products yet.</li>
             {% endfor %}

@@ -27,7 +27,7 @@ class BookListView(ListView):
         if self.request.user.is_authenticated:
             profile = user.profile
 
-            context['is_contributor'] = profile.roles.filter(name="BOOK_CONTRIBUTOR")
+            context['is_contributor'] = profile.roles.filter(name="BOOK_CONTRIBUTOR").exists()
 
             contributed = Book.objects.filter(contributor=profile)
             bookmarked = Book.objects.filter(bookmarks__profile=profile)
@@ -62,7 +62,7 @@ class BookDetailView(DetailView):
         context['is_available'] = book.available_to_borrow and not active_borrow
 
         if self.request.user.is_authenticated:
-            context['is_contributor'] = self.request.user.profile.roles.filter(name="BOOK_CONTRIBUTOR")
+            context['is_contributor'] = self.request.user.profile.roles.filter(name="BOOK_CONTRIBUTOR").exists()
             context['is_bookmarked'] = book.bookmarks.filter(profile=self.request.user.profile).exists()
         else:
             context['is_bookmarked'] = False

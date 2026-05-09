@@ -2,20 +2,28 @@
 
 {% block content %}
     <h1>Products</h1>
-    <p><a href="{% url 'merchstore:product_create' %}">Add a new product</a></p>
 
-    {% if my_products %}
+    {% if request.user.is_authenticated %}
+        {% if is_market_seller %}
+        <p><a href="{% url 'merchstore:product_create' %}">Add a new product</a></p>
+        <p><a href="{% url 'merchstore:transaction_list' %}">View My Sales/Transactions</a></p>
+        {% endif %}
+
         <section>
             <h2>Your products</h2>
-            <ul>
-                {% for product in my_products %}
-                    <li>
-                        <a href="{% url 'merchstore:product_detail' product.pk %}">{{ product.name }}</a>
-                        ({{ product.get_status_display }}, {{ product.stock }} available)
-                        <a href="{% url 'merchstore:product_update' product.pk %}">Edit</a>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% if my_products %}
+                <ul>
+                    {% for product in my_products %}
+                        <li>
+                            <a href="{% url 'merchstore:product_detail' product.pk %}">{{ product.name }}</a>
+                            ({{ product.get_status_display }}, {{ product.stock }} available)
+                            <a href="{% url 'merchstore:product_update' product.pk %}">Edit</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul><p>You haven't created products yet.</p></ul>
+            {% endif %}
         </section>
     {% endif %}
 
@@ -32,4 +40,15 @@
             {% endfor %}
         </ul>
     </section>
+
+    {% if request.user.is_authenticated %}
+        {% if has_cart_items %}
+            <a href="{% url 'merchstore:cart' %}">View Cart</a>
+        {% else %}
+            <p> Your Cart is Empty.</p>
+        {% endif %}
+    {% else %}
+        <p><small><a href="{% url 'login' %}">Log in</a> to view your saved cart items or to add items.</small></p>
+    {% endif %}
+
 {% endblock %}
