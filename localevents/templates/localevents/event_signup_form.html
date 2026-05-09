@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_2.html' %}
 
 {% block content %}
 <h2>Sign Up for: {{ event.title }}</h2>
@@ -17,12 +17,12 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        <label for="name">Please enter your name to register:</label>[cite: 1]
+        <label for="name">Please enter your name to register:</label>
         <input type="text" name="name" id="name" required class="form-control">
     </div>
     
     <div style="margin-top: 20px;">
-        <button type="submit" class="btn btn-primary">Confirm Sign Up</button>[cite: 1]
+        <button type="submit" class="btn btn-primary">Confirm Sign Up</button>
         <a href="{% url 'localevents:event-detail' event.pk %}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>

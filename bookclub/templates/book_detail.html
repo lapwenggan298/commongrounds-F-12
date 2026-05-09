@@ -2,8 +2,6 @@
 
 	{% block content %}
 
-	<a href = "{% url 'bookclub:book_list' %}">Back to List of Books</a>
-
 	<h1> Book Detail</h1>
 	
 	<h2> {{ book.title }}</h2>
@@ -44,6 +42,9 @@
 	<br>
 		<a href = "{% url 'bookclub:book_borrow' book.pk %}"> Borrow Book </a>
 	{% endif %}
+
+	<br>
+	<a href = "{% url 'bookclub:book_list' %}">Back to List of Books</a>
 	
 	<hr>
 	<h3>Reviews</h3>

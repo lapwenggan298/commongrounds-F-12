@@ -19,7 +19,7 @@
     <h3>Events Organized</h3>
         <ul>
             {% for event in events %}
-            <li>{{ event.title }} on {{ event.date }}</li>
+            <li>{{ event.title }} on {{ event.start_time }} in {{ event.location }}</li>
             {% empty %}
             <li>You haven't organized any events yet.</li>
             {% endfor %}
