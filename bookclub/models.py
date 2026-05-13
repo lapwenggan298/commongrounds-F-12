@@ -38,7 +38,10 @@ class Book(models.Model):
     )
 
     def __str__(self):
-        return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.genre.name}."
+        if self.genre:
+            return f"{self.title} by {self.author} published in {self.publication_year} of the genre {self.genre.name}."
+        
+        return f"{self.title} by {self.author} published in {self.publication_year}."
     
     def get_absolute_url(self):
         return reverse("bookclub:book_detail", args=[str(self.pk)])
