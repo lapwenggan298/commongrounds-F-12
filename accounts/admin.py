@@ -14,6 +14,11 @@ class ProfileInLine(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInLine]
 
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(UserAdmin, self).get_inline_instances(request, obj)
+
 
 class RoleAdmin(admin.ModelAdmin):
     model = Role
